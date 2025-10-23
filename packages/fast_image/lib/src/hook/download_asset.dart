@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:code_assets/code_assets.dart';
 
 Uri downloadUri(String target) => Uri.parse(
-  'https://github.com/hawkkiller/fast_image/tree/main/packages/fast_image/assets/libs/$target',
+  'https://raw.githubusercontent.com/hawkkiller/fast_image/main/packages/fast_image/assets/libs/$target',
 );
 
 Future<File> downloadAsset(

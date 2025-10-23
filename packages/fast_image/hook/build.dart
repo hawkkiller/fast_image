@@ -15,7 +15,7 @@ void main(List<String> args) async {
     output.assets.code.add(
       CodeAsset(
         package: input.packageName,
-        name: 'fast_image.dart',
+        name: 'src/bindings/bindings.dart',
         linkMode: DynamicLoadingBundled(),
         file: file.uri,
       ),
