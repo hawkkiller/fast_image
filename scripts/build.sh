@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+cd native
+cbindgen -l c --output ../packages/fast_image/native/include/fast_image.h
+
+cd ..
+cd packages/fast_image
+dart run ffigen --config ffigen.yaml
+
+cd ../..
+
 # The root directory of the Dart package where libs will be stored.
 DEST_DIR="./packages/fast_image/assets/libs"
 
