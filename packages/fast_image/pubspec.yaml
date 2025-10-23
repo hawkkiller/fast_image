@@ -6,7 +6,9 @@ environment:
   sdk: ^3.10.0-290.1.beta
 
 dependencies:
+  code_assets: ^0.19.9
   ffi: ^2.1.4
+  hooks: ^0.20.4
 
 dev_dependencies:
   ffigen: ^19.1.0

@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.2"
+  code_assets:
+    dependency: "direct main"
+    description:
+      name: code_assets
+      sha256: "450f46c55509b7215f2b2ead126bad1567a2edf3207ea0eb7a91d3d508cea0f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.19.9"
   collection:
     dependency: transitive
     description:
@@ -137,6 +145,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  hooks:
+    dependency: "direct main"
+    description:
+      name: hooks
+      sha256: "6274d1fe704962cbb881d437aae11af3e6eecc810da7438cc100c85679b4feb6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.4"
   http_multi_server:
     dependency: transitive
     description:
