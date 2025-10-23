@@ -1,0 +1,14 @@
+name: fast_image
+description: A fast image processing package.
+version: 0.0.1
+
+environment:
+  sdk: ^3.10.0-290.1.beta
+
+dependencies:
+  ffi: ^2.1.4
+
+dev_dependencies:
+  ffigen: ^19.1.0
+  lints: ^6.0.0
+  test: ^1.25.6
