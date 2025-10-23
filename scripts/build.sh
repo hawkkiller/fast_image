@@ -7,11 +7,9 @@ DEST_DIR="./packages/fast_image/assets/libs"
 # --- Build for macOS (Apple Silicon) ---
 echo "Building for macOS aarch64..."
 (cd native && cargo build --release --target aarch64-apple-darwin)
-mkdir -p "$DEST_DIR/macos-aarch64"
-cp "./native/target/aarch64-apple-darwin/release/libnative.dylib" "$DEST_DIR/macos-aarch64/"
+cp "./native/target/aarch64-apple-darwin/release/libnative.dylib" "$DEST_DIR/libmacos-arm64.dylib"
 
 # --- Build for macOS (Intel) ---
 echo "Building for macOS x86_64..."
 (cd native && cargo build --release --target x86_64-apple-darwin)
-mkdir -p "$DEST_DIR/macos-x86_64"
-cp "./native/target/x86_64-apple-darwin/release/libnative.dylib" "$DEST_DIR/macos-x86_64/"
+cp "./native/target/x86_64-apple-darwin/release/libnative.dylib" "$DEST_DIR/libmacos-x86_64.dylib"

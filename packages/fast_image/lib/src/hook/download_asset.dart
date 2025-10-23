@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
 
+Uri downloadUri(String target) => Uri.parse(
+  'https://github.com/hawkkiller/fast_image/tree/main/packages/fast_image/assets/libs/$target',
+);
+
 Future<File> downloadAsset(
   OS targetOS,
   Architecture targetArchitecture,
@@ -12,10 +16,17 @@ Future<File> downloadAsset(
     createTargetName(targetOS.name, targetArchitecture.name, iOSSdk?.type),
   );
 
-  final file = File.fromUri(outputDirectory.uri.resolve(targetName));
-  await file.create();
+  final uri = downloadUri(targetName);
+  final request = await HttpClient().getUrl(uri);
+  final response = await request.close();
+  if (response.statusCode != 200) {
+    throw ArgumentError('The request to $uri failed.');
+  }
 
-  return file;
+  final library = File.fromUri(outputDirectory.uri.resolve(targetName));
+  await library.create();
+  await response.pipe(library.openWrite());
+  return library;
 }
 
 String createTargetName(String targetOS, String targetArchitecture, String? iOSSdk) {
