@@ -1,0 +1,19 @@
+# Run with `dart run ffigen --config ffigen.yaml`.
+name: FastImageBindings
+output: "lib/src/bindings/bindings.dart"
+headers:
+  entry-points:
+    - "native/include/fast_image.h"
+  include-directives:
+    - "native/include/fast_image.h"
+preamble: |
+  // ignore_for_file: always_specify_types
+  // ignore_for_file: camel_case_types
+  // ignore_for_file: non_constant_identifier_names
+comments:
+  style: any
+  length: full
+compiler-opts:
+  - -isysroot
+  - /Applications/Xcode-16.2.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+ffi-native:

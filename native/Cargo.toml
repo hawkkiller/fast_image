@@ -3,6 +3,9 @@ name = "native"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib"]
+
 [dependencies]
 image = "0.25.5"
 libc = "0.2.177"
