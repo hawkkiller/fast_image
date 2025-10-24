@@ -26,12 +26,21 @@ external void fast_image_free(ffi.Pointer<ImageHandle> handle);
 external ffi.Pointer<ImageHandle> fast_image_load(ffi.Pointer<ffi.Char> path);
 
 /// Load an image from memory buffer
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)>()
-external ffi.Pointer<ImageHandle> fast_image_load_from_memory(ffi.Pointer<ffi.Uint8> data, int len);
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)
+>()
+external ffi.Pointer<ImageHandle> fast_image_load_from_memory(
+  ffi.Pointer<ffi.Uint8> data,
+  int len,
+);
 
 /// Load an image from memory with specific format
 @ffi.Native<
-  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr, ImageFormatEnum$1)
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ffi.Uint8>,
+    ffi.UintPtr,
+    ImageFormatEnum$1,
+  )
 >()
 external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_format(
   ffi.Pointer<ffi.Uint8> data,
@@ -40,8 +49,13 @@ external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_format(
 );
 
 /// Save an image to a file path
-@ffi.Native<ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>, ffi.Pointer<ffi.Char>)>()
-external int fast_image_save(ffi.Pointer<ImageHandle> handle, ffi.Pointer<ffi.Char> path);
+@ffi.Native<
+  ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>, ffi.Pointer<ffi.Char>)
+>()
+external int fast_image_save(
+  ffi.Pointer<ImageHandle> handle,
+  ffi.Pointer<ffi.Char> path,
+);
 
 /// Encode an image to a buffer in the specified format
 /// Caller must free the buffer using fast_image_free_buffer
@@ -61,7 +75,12 @@ external int fast_image_encode(
 );
 
 /// Get image metadata
-@ffi.Native<ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>, ffi.Pointer<ImageMetadata>)>()
+@ffi.Native<
+  ImageErrorCode$1 Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Pointer<ImageMetadata>,
+  )
+>()
 external int fast_image_get_metadata(
   ffi.Pointer<ImageHandle> handle,
   ffi.Pointer<ImageMetadata> out_metadata,
@@ -135,39 +154,66 @@ external ffi.Pointer<ImageHandle> fast_image_crop(
 
 /// Rotate an image 90 degrees clockwise
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_rotate_90(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_rotate_90(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Rotate an image 180 degrees
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_rotate_180(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_rotate_180(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Rotate an image 270 degrees clockwise
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_rotate_270(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_rotate_270(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Flip an image horizontally
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_flip_horizontal(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_flip_horizontal(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Flip an image vertically
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_flip_vertical(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_flip_vertical(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Blur an image
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)>()
-external ffi.Pointer<ImageHandle> fast_image_blur(ffi.Pointer<ImageHandle> handle, double sigma);
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
+>()
+external ffi.Pointer<ImageHandle> fast_image_blur(
+  ffi.Pointer<ImageHandle> handle,
+  double sigma,
+);
 
 /// Adjust brightness
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Int32)>()
-external ffi.Pointer<ImageHandle> fast_image_brightness(ffi.Pointer<ImageHandle> handle, int value);
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Int32)
+>()
+external ffi.Pointer<ImageHandle> fast_image_brightness(
+  ffi.Pointer<ImageHandle> handle,
+  int value,
+);
 
 /// Adjust contrast
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)>()
-external ffi.Pointer<ImageHandle> fast_image_contrast(ffi.Pointer<ImageHandle> handle, double c);
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
+>()
+external ffi.Pointer<ImageHandle> fast_image_contrast(
+  ffi.Pointer<ImageHandle> handle,
+  double c,
+);
 
 /// Convert to grayscale
 @ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
-external ffi.Pointer<ImageHandle> fast_image_grayscale(ffi.Pointer<ImageHandle> handle);
+external ffi.Pointer<ImageHandle> fast_image_grayscale(
+  ffi.Pointer<ImageHandle> handle,
+);
 
 /// Invert colors (mutates the image)
 @ffi.Native<ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>)>()

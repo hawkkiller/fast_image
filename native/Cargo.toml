@@ -9,3 +9,12 @@ crate-type = ["cdylib"]
 [dependencies]
 image = "0.25.5"
 libc = "0.2.177"
+
+[profile.release]
+# Optimize for size
+opt-level = "z"     # Optimize for size instead of speed
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Better optimization at the cost of compile time
+strip = true        # Automatically strip symbols from the binary
+panic = "abort"     # Reduce code size by not unwinding panics
+
