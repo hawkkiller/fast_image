@@ -1,7 +1,6 @@
 use image::{DynamicImage, ImageFormat, ImageError, imageops::FilterType};
 use std::path::Path;
 
-#[allow(dead_code)]
 /// Error codes for image operations
 #[repr(u32)]
 pub enum ImageErrorCode {
