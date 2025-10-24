@@ -8,5 +8,312 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-@ffi.Native<ffi.Pointer<ffi.Uint8> Function()>()
-external ffi.Pointer<ffi.Uint8> hello_from_rust();
+/// Free a string allocated by Rust
+@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Char>)>()
+external void fast_image_free_string(ffi.Pointer<ffi.Char> ptr);
+
+/// Free image data buffer
+@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)>()
+external void fast_image_free_buffer(ffi.Pointer<ffi.Uint8> ptr, int len);
+
+/// Free an image handle
+@ffi.Native<ffi.Void Function(ffi.Pointer<ImageHandle>)>()
+external void fast_image_free(ffi.Pointer<ImageHandle> handle);
+
+/// Load an image from a file path
+/// Returns null on error
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Char>)>()
+external ffi.Pointer<ImageHandle> fast_image_load(ffi.Pointer<ffi.Char> path);
+
+/// Load an image from memory buffer
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)
+>()
+external ffi.Pointer<ImageHandle> fast_image_load_from_memory(
+  ffi.Pointer<ffi.Uint8> data,
+  int len,
+);
+
+/// Load an image from memory with specific format
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ffi.Uint8>,
+    ffi.UintPtr,
+    ImageFormatEnum$1,
+  )
+>()
+external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_format(
+  ffi.Pointer<ffi.Uint8> data,
+  int len,
+  int format,
+);
+
+/// Save an image to a file path
+@ffi.Native<
+  ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>, ffi.Pointer<ffi.Char>)
+>()
+external int fast_image_save(
+  ffi.Pointer<ImageHandle> handle,
+  ffi.Pointer<ffi.Char> path,
+);
+
+/// Encode an image to a buffer in the specified format
+/// Caller must free the buffer using fast_image_free_buffer
+@ffi.Native<
+  ImageErrorCode$1 Function(
+    ffi.Pointer<ImageHandle>,
+    ImageFormatEnum$1,
+    ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
+    ffi.Pointer<ffi.UintPtr>,
+  )
+>()
+external int fast_image_encode(
+  ffi.Pointer<ImageHandle> handle,
+  int format,
+  ffi.Pointer<ffi.Pointer<ffi.Uint8>> out_data,
+  ffi.Pointer<ffi.UintPtr> out_len,
+);
+
+/// Get image metadata
+@ffi.Native<
+  ImageErrorCode$1 Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Pointer<ImageMetadata>,
+  )
+>()
+external int fast_image_get_metadata(
+  ffi.Pointer<ImageHandle> handle,
+  ffi.Pointer<ImageMetadata> out_metadata,
+);
+
+/// Resize an image
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Uint32,
+    ffi.Uint32,
+    FilterTypeEnum$1,
+  )
+>()
+external ffi.Pointer<ImageHandle> fast_image_resize(
+  ffi.Pointer<ImageHandle> handle,
+  int width,
+  int height,
+  int filter,
+);
+
+/// Resize an image to exact dimensions
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Uint32,
+    ffi.Uint32,
+    FilterTypeEnum$1,
+  )
+>()
+external ffi.Pointer<ImageHandle> fast_image_resize_exact(
+  ffi.Pointer<ImageHandle> handle,
+  int width,
+  int height,
+  int filter,
+);
+
+/// Resize to fit within dimensions
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Uint32,
+    ffi.Uint32,
+    FilterTypeEnum$1,
+  )
+>()
+external ffi.Pointer<ImageHandle> fast_image_resize_to_fit(
+  ffi.Pointer<ImageHandle> handle,
+  int width,
+  int height,
+  int filter,
+);
+
+/// Crop an image
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(
+    ffi.Pointer<ImageHandle>,
+    ffi.Uint32,
+    ffi.Uint32,
+    ffi.Uint32,
+    ffi.Uint32,
+  )
+>()
+external ffi.Pointer<ImageHandle> fast_image_crop(
+  ffi.Pointer<ImageHandle> handle,
+  int x,
+  int y,
+  int width,
+  int height,
+);
+
+/// Rotate an image 90 degrees clockwise
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_rotate_90(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Rotate an image 180 degrees
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_rotate_180(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Rotate an image 270 degrees clockwise
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_rotate_270(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Flip an image horizontally
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_flip_horizontal(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Flip an image vertically
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_flip_vertical(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Blur an image
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
+>()
+external ffi.Pointer<ImageHandle> fast_image_blur(
+  ffi.Pointer<ImageHandle> handle,
+  double sigma,
+);
+
+/// Adjust brightness
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Int32)
+>()
+external ffi.Pointer<ImageHandle> fast_image_brightness(
+  ffi.Pointer<ImageHandle> handle,
+  int value,
+);
+
+/// Adjust contrast
+@ffi.Native<
+  ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
+>()
+external ffi.Pointer<ImageHandle> fast_image_contrast(
+  ffi.Pointer<ImageHandle> handle,
+  double c,
+);
+
+/// Convert to grayscale
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+external ffi.Pointer<ImageHandle> fast_image_grayscale(
+  ffi.Pointer<ImageHandle> handle,
+);
+
+/// Invert colors (mutates the image)
+@ffi.Native<ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>)>()
+external int fast_image_invert(ffi.Pointer<ImageHandle> handle);
+
+/// Filter type for resizing operations
+enum FilterTypeEnum {
+  Nearest(0),
+  Triangle(1),
+  CatmullRom(2),
+  Gaussian(3),
+  Lanczos3(4);
+
+  final int value;
+  const FilterTypeEnum(this.value);
+
+  static FilterTypeEnum fromValue(int value) => switch (value) {
+    0 => Nearest,
+    1 => Triangle,
+    2 => CatmullRom,
+    3 => Gaussian,
+    4 => Lanczos3,
+    _ => throw ArgumentError('Unknown value for FilterTypeEnum: $value'),
+  };
+}
+
+typedef FilterTypeEnum$1 = ffi.Uint32;
+typedef DartFilterTypeEnum = int;
+
+/// Error codes for image operations
+enum ImageErrorCode {
+  Success(0),
+  InvalidPath(1),
+  UnsupportedFormat(2),
+  DecodingError(3),
+  EncodingError(4),
+  IoError(5),
+  InvalidDimensions(6),
+  InvalidPointer(7),
+  Unknown(99);
+
+  final int value;
+  const ImageErrorCode(this.value);
+
+  static ImageErrorCode fromValue(int value) => switch (value) {
+    0 => Success,
+    1 => InvalidPath,
+    2 => UnsupportedFormat,
+    3 => DecodingError,
+    4 => EncodingError,
+    5 => IoError,
+    6 => InvalidDimensions,
+    7 => InvalidPointer,
+    99 => Unknown,
+    _ => throw ArgumentError('Unknown value for ImageErrorCode: $value'),
+  };
+}
+
+typedef ImageErrorCode$1 = ffi.Uint32;
+typedef DartImageErrorCode = int;
+
+/// Image format enum for encoding/decoding
+enum ImageFormatEnum {
+  Png(0),
+  Jpeg(1),
+  Gif(2),
+  WebP(3),
+  Bmp(4),
+  Ico(5),
+  Tiff(6);
+
+  final int value;
+  const ImageFormatEnum(this.value);
+
+  static ImageFormatEnum fromValue(int value) => switch (value) {
+    0 => Png,
+    1 => Jpeg,
+    2 => Gif,
+    3 => WebP,
+    4 => Bmp,
+    5 => Ico,
+    6 => Tiff,
+    _ => throw ArgumentError('Unknown value for ImageFormatEnum: $value'),
+  };
+}
+
+typedef ImageFormatEnum$1 = ffi.Uint32;
+typedef DartImageFormatEnum = int;
+
+/// Opaque handle to an image
+final class ImageHandle extends ffi.Opaque {}
+
+/// Image metadata structure
+final class ImageMetadata extends ffi.Struct {
+  @ffi.Uint32()
+  external int width;
+
+  @ffi.Uint32()
+  external int height;
+
+  @ffi.Uint8()
+  external int color_type;
+}
