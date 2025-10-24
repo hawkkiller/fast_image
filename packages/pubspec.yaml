@@ -1,0 +1,13 @@
+name: fast_image_workspace
+description: A workspace for the fast_image package.
+
+environment:
+  sdk: ^3.10.0-290.1.beta
+
+workspace:
+  - fast_image
+
+hooks:
+  user_defines:
+    fast_image:
+      local_build: true

@@ -4,17 +4,15 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 image = "0.25.5"
 libc = "0.2.177"
 
 [profile.release]
-# Optimize for size
-opt-level = "z"     # Optimize for size instead of speed
-lto = true          # Enable Link Time Optimization
-codegen-units = 1   # Better optimization at the cost of compile time
-strip = true        # Automatically strip symbols from the binary
-panic = "abort"     # Reduce code size by not unwinding panics
-
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true

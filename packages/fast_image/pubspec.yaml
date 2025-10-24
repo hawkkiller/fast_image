@@ -1,6 +1,7 @@
 name: fast_image
 description: A fast image processing package.
 version: 0.0.1
+resolution: workspace
 
 environment:
   sdk: ^3.10.0-290.1.beta
@@ -9,6 +10,7 @@ dependencies:
   code_assets: ^0.19.9
   ffi: ^2.1.4
   hooks: ^0.20.4
+  native_toolchain_rs: ^0.1.2+3
 
 dev_dependencies:
   ffigen: ^19.1.0
