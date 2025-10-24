@@ -4,6 +4,7 @@ import 'package:code_assets/code_assets.dart';
 import 'package:fast_image/src/hook/download_asset.dart';
 import 'package:hooks/hooks.dart';
 
+// TODO: add "local-build" flag to skip downloading and use local build instead
 void main(List<String> args) async {
   await build(args, (input, output) async {
     final targetOS = input.config.code.targetOS;
