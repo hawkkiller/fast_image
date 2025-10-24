@@ -5,7 +5,6 @@ import 'package:fast_image/src/hook/download_asset.dart';
 import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_rs/native_toolchain_rs.dart';
 
-// TODO: add "local-build" flag to skip downloading and use local build instead
 void main(List<String> args) async {
   await build(args, (input, output) async {
     final localBuild = input.userDefines['local_build'] as bool? ?? false;
