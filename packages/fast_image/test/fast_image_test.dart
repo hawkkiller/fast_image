@@ -8,7 +8,7 @@ void main() {
       // This test would require an actual image file
       // For now, we just check that the exception is thrown for missing files
       expect(
-        FastImage.fromFile('nonexistent.jpg'),
+        () => FastImage.fromFile('nonexistent.jpg'),
         throwsA(isA<LoadException>()),
       );
     });
