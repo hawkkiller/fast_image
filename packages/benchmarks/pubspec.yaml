@@ -1,0 +1,20 @@
+name: benchmarks
+description: Benchmarks for the fast_image package
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0-36.0.dev
+
+# Add regular dependencies here.
+dependencies:
+  path: ^1.9.0
+  benchmark_harness: ^2.3.1
+  image: ^4.5.4
+  fast_image:
+    path: ../fast_image
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

@@ -5,5 +5,5 @@ void main() {
   final image = FastImage.fromFile('assets/img/example_img.jpg');
   final upscaledImage = image.resize(3840, 2160);
   upscaledImage.saveToFile('upscaled_image.jpg');
-  print('Image upscaled in ${stopwatch.elapsedMilliseconds} ms');
+  print('Image upscaled in ${stopwatch.elapsedMilliseconds}ms');
 }
