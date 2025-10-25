@@ -1,5 +1,5 @@
 /// A fast image processing library backed by Rust
-library fast_image;
+library;
 
 export 'src/fast_image_base.dart';
 export 'src/fast_image_exception.dart';
