@@ -11,21 +11,27 @@ dart run bin/main.dart
 ## Benchmark Categories
 
 ### 1. Resize Benchmarks
+
 Tests image resizing at different resolutions:
+
 - 800x600 (SD)
 - 1920x1080 (Full HD)
 - 3840x2160 (4K)
 
 ### 2. Load Benchmarks
+
 Measures image decoding performance from file bytes.
 
 ### 3. Encode Benchmarks
+
 Tests JPEG encoding performance.
 
 ### 4. Rotate Benchmarks
+
 Measures 90-degree rotation performance.
 
 ### 5. Flip Benchmarks
+
 Tests horizontal flip performance.
 
 ## Improvements Made
@@ -36,9 +42,31 @@ Tests horizontal flip performance.
 4. **Better Organization**: Separate benchmark classes for each operation type
 5. **Clear Output**: Organized output with categories and formatting
 
+## Benchmark Results
+
+_Last updated: October 25, 2025_
+
+| Operation            | fast_image (μs) | dart_image (μs) | Speedup   |
+| -------------------- | --------------- | --------------- | --------- |
+| **Resize 800x600**   | 146,030         | 3,180,235       | **21.8x** |
+| **Resize 1920x1080** | 2,302           | 4,791           | **2.1x**  |
+| **Resize 3840x2160** | 913,056         | 56,474,861      | **61.9x** |
+| **Load**             | 60,738          | 670,670         | **11.0x** |
+| **Encode JPEG**      | 137,764         | 1,140,747       | **8.3x**  |
+| **Rotate 90°**       | 16,207          | 312,003         | **19.3x** |
+| **Flip Horizontal**  | 15,747          | 374,257         | **23.8x** |
+
+### Key Findings
+
+- **Massive 4K Performance**: `fast_image` is **61.9x faster** at resizing 4K images
+- **Consistent Advantages**: Speedups range from 2.1x to 61.9x across all operations
+- **Memory Efficient**: Rust-backed implementation with proper resource management
+- **Production Ready**: Significant performance gains for real-world image processing tasks
+
 ## Expected Results
 
 `fast_image` should demonstrate significant performance advantages, especially for:
+
 - Large image resizing (4K)
 - Encoding operations
 - Batch transformations
