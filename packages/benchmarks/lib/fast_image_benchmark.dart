@@ -24,7 +24,6 @@ class FastImageResizeBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    // resize returns a new image, we need to dispose it to avoid memory leaks
     final resized = image.resize(targetWidth, targetHeight);
     resized.dispose();
   }
