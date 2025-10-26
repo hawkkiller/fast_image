@@ -79,6 +79,8 @@ jobs:
       # Keep this list consistent with packages/fast_image/lib/src/hook/target_versions.dart
       - name: Build Linux host
         if: matrix.os == 'ubuntu'
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: "aarch64-linux-gnu-gcc"
         run: |
           dart tool/build.dart -oandroid -aarm
           dart tool/build.dart -oandroid -aarm64

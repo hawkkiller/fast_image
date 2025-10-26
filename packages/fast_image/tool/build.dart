@@ -73,5 +73,7 @@ BuildInput createBuildInput(String osString, String architecture, String? iOSSdk
         cCompiler: os != OS.android ? null : getAndroidCompilerConfig(architectureEnum),
       ),
     );
+
+
   return inputBuilder.build();
 }
