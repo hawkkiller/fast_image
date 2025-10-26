@@ -6,6 +6,7 @@ Uri downloadUri(String target) => Uri.parse(
   'https://raw.githubusercontent.com/hawkkiller/fast_image/main/packages/fast_image/assets/libs/$target',
 );
 
+/// Downloads the asset for the given target OS and architecture.
 Future<File> downloadAsset(
   OS targetOS,
   Architecture targetArchitecture,

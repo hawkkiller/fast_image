@@ -2,20 +2,15 @@ import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
 import 'package:fast_image/src/hook/download_asset.dart';
+import 'package:fast_image/src/hook/local_build.dart';
 import 'package:hooks/hooks.dart';
-import 'package:native_toolchain_rs/native_toolchain_rs.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
     final localBuild = input.userDefines['local_build'] as bool? ?? false;
 
     if (localBuild) {
-      await RustBuilder(
-        assetName: 'src/bindings/bindings.dart',
-        cratePath: '../../native',
-      ).run(input: input, output: output);
-
-      return;
+      return runLocalBuild(input, output);
     }
 
     final targetOS = input.config.code.targetOS;

@@ -239,6 +239,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "fastimg"
+version = "0.1.0"
+dependencies = [
+ "image",
+ "libc",
+]
+
+[[package]]
 name = "fax"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -490,14 +498,6 @@ checksum = "c588e11a3082784af229e23e8e4ecf5bcc6fbe4f69101e0421ce8d79da7f0b40"
 dependencies = [
  "num-traits",
  "pxfm",
-]
-
-[[package]]
-name = "native"
-version = "0.1.0"
-dependencies = [
- "image",
- "libc",
 ]
 
 [[package]]

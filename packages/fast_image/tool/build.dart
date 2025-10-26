@@ -6,13 +6,15 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:code_assets/code_assets.dart';
+import 'package:fast_image/src/hook/local_build.dart';
+import 'package:fast_image/src/hook/target_versions.dart';
 import 'package:hooks/hooks.dart';
 
 void main(List<String> args) async {
   final (os: os, architecture: architecture, iOSSdk: iOSSdk) = parseArguments(args);
   final input = createBuildInput(os, architecture, iOSSdk);
   final output = BuildOutputBuilder();
-  await runBuild(input, output);
+  await runLocalBuild(input, output);
 }
 
 ({String architecture, String os, String? iOSSdk}) parseArguments(List<String> args) {
@@ -44,14 +46,14 @@ void main(List<String> args) async {
 
 BuildInput createBuildInput(String osString, String architecture, String? iOSSdk) {
   final packageRoot = Platform.script.resolve('..');
-  final outputDirectoryShared = packageRoot.resolve('.dart_tool/download_asset/shared/');
-  final outputFile = packageRoot.resolve('.dart_tool/download_asset/output.json');
+  final outputDirectoryShared = packageRoot.resolve('.dart_tool/fast_image/shared/');
+  final outputFile = packageRoot.resolve('.dart_tool/fast_image/output.json');
 
   final os = OS.fromString(osString);
   final inputBuilder = BuildInputBuilder()
     ..setupShared(
       packageRoot: packageRoot,
-      packageName: 'download_asset',
+      packageName: 'fast_image',
       outputFile: outputFile,
       outputDirectoryShared: outputDirectoryShared,
     )
