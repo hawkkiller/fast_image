@@ -61,7 +61,7 @@ build_for_target "x86_64-apple-ios" "iOS x64 (Simulator)"
 echo -e "${GREEN}=== Building Linux libraries ===${NC}"
 build_for_target "armv7-unknown-linux-gnueabihf" "Linux ARM"
 build_for_target "aarch64-unknown-linux-gnu" "Linux ARM64"
-build_for_target "i686-unknown-linux-gnu" "Linux IA32"
+# build_for_target "i686-unknown-linux-gnu" "Linux IA32"
 # build_for_target "riscv64gc-unknown-linux-gnu" "Linux RISC-V 64"
 build_for_target "x86_64-unknown-linux-gnu" "Linux x64"
 
@@ -73,7 +73,7 @@ build_for_target "x86_64-apple-darwin" "macOS x64"
 # Windows builds
 echo -e "${GREEN}=== Building Windows libraries ===${NC}"
 build_for_target "aarch64-pc-windows-msvc" "Windows ARM64"
-build_for_target "i686-pc-windows-msvc" "Windows IA32"
+# build_for_target "i686-pc-windows-msvc" "Windows IA32"
 build_for_target "x86_64-pc-windows-msvc" "Windows x64"
 
 # Summary

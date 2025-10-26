@@ -11,8 +11,8 @@ image = "0.25.5"
 libc = "0.2.177"
 
 [profile.release]
-opt-level = 3
-lto = "fat"
-codegen-units = 1
-panic = "abort"
-strip = true
+# opt-level = 3
+# lto = "fat"
+# codegen-units = 1
+# panic = "abort"
+# strip = true
