@@ -12,7 +12,7 @@ on:
       - packages/fast_image/
   push:
     tags:
-      - "fast_image-*"
+      - "fast_image-assets*"
   workflow_dispatch:
 
 jobs:
@@ -76,22 +76,29 @@ jobs:
 
       - run: dart pub get
 
+      - run: mkdir libs
+
       # Keep this list consistent with packages/fast_image/lib/src/hook/target_versions.dart
       - name: Build Linux host
         if: matrix.os == 'ubuntu'
-        env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: "aarch64-linux-gnu-gcc"
         run: |
-          dart tool/build.dart -oandroid -aarm
-          dart tool/build.dart -oandroid -aarm64
           # dart tool/build.dart -oandroid -aia32
           # dart tool/build.dart -oandroid -ariscv64
-          dart tool/build.dart -oandroid -ax64
           # dart tool/build.dart -olinux -aarm
-          dart tool/build.dart -olinux -aarm64
           # dart tool/build.dart -olinux -aia32
           # dart tool/build.dart -olinux -ariscv64
+
+          dart tool/build.dart -oandroid -aarm
+          dart tool/build.dart -oandroid -aarm64
+          dart tool/build.dart -oandroid -ax64
+          dart tool/build.dart -olinux -aarm64
           dart tool/build.dart -olinux -ax64
+
+          mv .dart_tool/fast_image/shared/**/target/armv7-linux-androideabi/release/libfastimg.so libs/libfastimg_android_armv7.so
+          mv .dart_tool/fast_image/shared/**/target/aarch64-linux-android/release/libfastimg.so libs/libfastimg_android_arm64.so
+          mv .dart_tool/fast_image/shared/**/target/x86_64-linux-android/release/libfastimg.so libs/libfastimg_android_x86_64.so
+          mv .dart_tool/fast_image/shared/**/target/aarch64-unknown-linux-gnu/release/libfastimg.so libs/libfastimg_linux_aarch64.so
+          mv .dart_tool/fast_image/shared/**/target/x86_64-unknown-linux-gnu/release/libfastimg.so libs/libfastimg_linux_x86_64.so
 
       - name: Build MacOS host
         if: matrix.os == 'macos'
@@ -102,20 +109,26 @@ jobs:
           dart tool/build.dart -oios -iiphonesimulator -aarm64
           dart tool/build.dart -oios -iiphonesimulator -ax64
 
+          mv .dart_tool/fast_image/shared/**/target/aarch64-apple-darwin/release/libfastimg.dylib libs/libfastimg_macos_arm64.dylib
+          mv .dart_tool/fast_image/shared/**/target/x86_64-apple-darwin/release/libfastimg.dylib libs/libfastimg_macos_x86_64.dylib
+          mv .dart_tool/fast_image/shared/**/target/aarch64-apple-ios/release/libfastimg.dylib libs/libfastimg_ios_arm64.dylib
+          mv .dart_tool/fast_image/shared/**/target/aarch64-apple-ios-sim/release/libfastimg.dylib libs/libfastimg_ios_sim_arm64.dylib
+          mv .dart_tool/fast_image/shared/**/target/x86_64-apple-ios/release/libfastimg.dylib libs/libfastimg_ios_sim_x86_64.dyl
+
       - name: Build Windows host
         if: matrix.os == 'windows'
         run: |
           dart tool/build.dart -owindows -aarm64
           dart tool/build.dart -owindows -ax64
 
+          mv .dart_tool/fast_image/shared/**/target/aarch64-pc-windows-msvc/release/fastimg.dll libs/fastimg_windows_arm64.dll
+          mv .dart_tool/fast_image/shared/**/target/x86_64-pc-windows-msvc/release/fastimg.dll libs/fastimg_windows_x86_64.dll
+
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ${{ matrix.os }}-host
-          path: |
-            packages/fast_image/.dart_tool/fast_image/**/*.dll
-            packages/fast_image/.dart_tool/fast_image/**/*.dylib
-            packages/fast_image/.dart_tool/fast_image/**/*.so
+          path: packages/fast_image/libs/
           if-no-files-found: error
 
   release:
@@ -135,14 +148,14 @@ jobs:
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           merge-multiple: true
-          path: packages/fast_image/.dart_tool/fast_image/
+          path: packages/fast_image/libs/
 
       - name: Display structure of downloaded assets
-        run: ls -R .dart_tool/fast_image/
+        run: ls -R libs/
 
       - name: Release
         uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836
         if: startsWith(github.ref, 'refs/tags/fast_image')
         with:
-          files: "packages/fast_image/.dart_tool/fast_image/**"
+          files: "packages/fast_image/libs/**"
           fail_on_unmatched_files: true
