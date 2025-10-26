@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:code_assets/code_assets.dart';
+import 'package:fast_image/src/hook/get_android_compiler_config.dart';
 import 'package:fast_image/src/hook/local_build.dart';
 import 'package:fast_image/src/hook/target_versions.dart';
 import 'package:hooks/hooks.dart';
@@ -50,6 +51,7 @@ BuildInput createBuildInput(String osString, String architecture, String? iOSSdk
   final outputFile = packageRoot.resolve('.dart_tool/fast_image/output.json');
 
   final os = OS.fromString(osString);
+  final architectureEnum = Architecture.fromString(architecture);
   final inputBuilder = BuildInputBuilder()
     ..setupShared(
       packageRoot: packageRoot,
@@ -60,7 +62,7 @@ BuildInput createBuildInput(String osString, String architecture, String? iOSSdk
     ..config.setupBuild(linkingEnabled: false)
     ..addExtension(
       CodeAssetExtension(
-        targetArchitecture: Architecture.fromString(architecture),
+        targetArchitecture: architectureEnum,
         targetOS: os,
         linkModePreference: LinkModePreference.dynamic,
         android: os != OS.android ? null : AndroidCodeConfig(targetNdkApi: androidTargetNdkApi),
@@ -68,6 +70,7 @@ BuildInput createBuildInput(String osString, String architecture, String? iOSSdk
             ? null
             : IOSCodeConfig(targetSdk: IOSSdk.fromString(iOSSdk!), targetVersion: iOSTargetVersion),
         macOS: MacOSCodeConfig(targetVersion: macOSTargetVersion),
+        cCompiler: os != OS.android ? null : getAndroidCompilerConfig(architectureEnum),
       ),
     );
   return inputBuilder.build();
