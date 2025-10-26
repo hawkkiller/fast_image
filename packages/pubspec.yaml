@@ -7,7 +7,7 @@ environment:
 workspace:
   - fast_image
   - benchmarks
-  - upscale_flutter
+  # - upscale_flutter
 
 hooks:
   user_defines:
