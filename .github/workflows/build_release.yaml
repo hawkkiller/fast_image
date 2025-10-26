@@ -72,7 +72,7 @@ jobs:
         run: |
           rustup target add aarch64-pc-windows-msvc
           rustup target add x86_64-pc-windows-msvc
-          rustup target add i686-pc-windows-msvc
+          # rustup target add i686-pc-windows-msvc
 
       - run: dart pub get
 
@@ -82,13 +82,13 @@ jobs:
         run: |
           dart tool/build.dart -oandroid -aarm
           dart tool/build.dart -oandroid -aarm64
-          dart tool/build.dart -oandroid -aia32
-          dart tool/build.dart -oandroid -ariscv64
+          # dart tool/build.dart -oandroid -aia32
+          # dart tool/build.dart -oandroid -ariscv64
           dart tool/build.dart -oandroid -ax64
           dart tool/build.dart -olinux -aarm
           dart tool/build.dart -olinux -aarm64
-          dart tool/build.dart -olinux -aia32
-          dart tool/build.dart -olinux -ariscv64
+          # dart tool/build.dart -olinux -aia32
+          # dart tool/build.dart -olinux -ariscv64
           dart tool/build.dart -olinux -ax64
 
       - name: Build MacOS host
@@ -103,9 +103,7 @@ jobs:
       - name: Build Windows host
         if: matrix.os == 'windows'
         run: |
-          dart tool/build.dart -owindows -aarm
           dart tool/build.dart -owindows -aarm64
-          dart tool/build.dart -owindows -aia32
           dart tool/build.dart -owindows -ax64
 
       - name: Upload artifacts
