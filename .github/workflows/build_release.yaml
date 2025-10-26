@@ -113,7 +113,7 @@ jobs:
           mv .dart_tool/fast_image/shared/**/target/x86_64-apple-darwin/release/libfastimg.dylib libs/libfastimg_macos_x86_64.dylib
           mv .dart_tool/fast_image/shared/**/target/aarch64-apple-ios/release/libfastimg.dylib libs/libfastimg_ios_arm64.dylib
           mv .dart_tool/fast_image/shared/**/target/aarch64-apple-ios-sim/release/libfastimg.dylib libs/libfastimg_ios_sim_arm64.dylib
-          mv .dart_tool/fast_image/shared/**/target/x86_64-apple-ios/release/libfastimg.dylib libs/libfastimg_ios_sim_x86_64.dyl
+          mv .dart_tool/fast_image/shared/**/target/x86_64-apple-ios/release/libfastimg.dylib libs/libfastimg_ios_sim_x86_64.dylib
 
       - name: Build Windows host
         if: matrix.os == 'windows'
