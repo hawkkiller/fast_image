@@ -85,7 +85,7 @@ jobs:
           # dart tool/build.dart -oandroid -aia32
           # dart tool/build.dart -oandroid -ariscv64
           dart tool/build.dart -oandroid -ax64
-          dart tool/build.dart -olinux -aarm
+          # dart tool/build.dart -olinux -aarm
           dart tool/build.dart -olinux -aarm64
           # dart tool/build.dart -olinux -aia32
           # dart tool/build.dart -olinux -ariscv64
