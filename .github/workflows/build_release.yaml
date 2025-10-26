@@ -12,7 +12,7 @@ on:
       - packages/fast_image/
   push:
     tags:
-      - "fast_image-prebuild-assets-*"
+      - "fast_image-*"
   workflow_dispatch:
 
 jobs:
@@ -142,7 +142,7 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836
-        if: startsWith(github.ref, 'refs/tags/fast_image-prebuild-assets')
+        if: startsWith(github.ref, 'refs/tags/fast_image')
         with:
           files: "packages/fast_image/.dart_tool/fast_image/**"
           fail_on_unmatched_files: true
