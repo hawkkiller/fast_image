@@ -1,0 +1,17 @@
+language = "C"
+include_guard = "FAST_IMAGE_H"
+style = "both"
+cpp_compat = true
+
+[export]
+include = [
+  "ImageHandle",
+  "ImageResult",
+  "ImageErrorCode",
+  "ImageFormatEnum",
+  "FilterTypeEnum",
+  "ImageMetadata",
+]
+
+[parse]
+parse_deps = false
