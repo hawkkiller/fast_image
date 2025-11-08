@@ -14,7 +14,12 @@ Future<void> main(List<String> args) async {
   await assetsDir.create(recursive: true);
   await Future.wait([
     for (final (targetOS, targetArchitecture, iOSSdk) in supportedTargets)
-      downloadAsset(targetOS, targetArchitecture, iOSSdk, assetsDir),
+      downloadAsset(
+        targetOS: targetOS,
+        targetArchitecture: targetArchitecture,
+        iOSSdk: iOSSdk,
+        outputDirectory: assetsDir,
+      ),
   ]);
   final assetFiles = assetsDir.listSync(recursive: true).whereType<File>().toList()
     ..sort((f1, f2) => f1.path.compareTo(f2.path));
