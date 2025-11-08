@@ -11,6 +11,7 @@ dependencies:
   ffi: ^2.1.4
   hooks: ^0.20.4
   native_toolchain_rs: ^0.1.2+3
+  crypto: ^3.0.7
 
 dev_dependencies:
   ffigen: ^19.1.0
