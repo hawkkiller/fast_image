@@ -50,7 +50,10 @@ Future<void> verifyAssetHash(
   required IOSSdk? iOSSdk,
 }) async {
   final hash = await hashAsset(asset);
-  final expectedHash = assetHashes[createTargetName(targetOS, targetArchitecture, iOSSdk)];
+  final targetName = targetOS.dylibFileName(
+    createTargetName(targetOS, targetArchitecture, iOSSdk),
+  );
+  final expectedHash = assetHashes[targetName];
 
   if (hash != expectedHash) {
     throw Exception('Asset hash mismatch: $hash != $expectedHash');
