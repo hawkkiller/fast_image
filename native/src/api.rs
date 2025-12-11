@@ -241,9 +241,12 @@ pub fn get_metadata(img: &DynamicImage) -> ImageMetadata {
 pub fn guess_image_format(data: &[u8]) -> Result<ImageFormatEnum, ImageError> {
     let format = image::guess_format(data)?;
     ImageFormatEnum::from_image_format(format)
-        .ok_or_else(|| ImageError::Unsupported(image::error::UnsupportedError::from_format_hint(
-            image::error::ImageFormatHint::Unknown
-        )))
+        .ok_or_else(|| {
+            ImageError::Unsupported(image::error::UnsupportedError::from_format_and_kind(
+                image::error::ImageFormatHint::Unknown,
+                image::error::UnsupportedErrorKind::Format(image::error::ImageFormatHint::Unknown),
+            ))
+        })
 }
 
 /// Convert ImageError to error code
