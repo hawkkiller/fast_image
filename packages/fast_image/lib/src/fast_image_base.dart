@@ -8,10 +8,10 @@ import 'fast_image_exception.dart';
 import 'image_metadata.dart';
 
 /// A fast image processing library
-/// 
+///
 /// This class provides methods for loading, saving, and manipulating images.
 /// Images are backed by native Rust code for high performance.
-/// 
+///
 /// Example:
 /// ```dart
 /// final image = FastImage.fromFile('input.jpg');
@@ -26,8 +26,37 @@ final class FastImage {
   final ffi.Pointer<ImageHandle> _handle;
   bool _isDisposed = false;
 
+  /// Guesses the image format from byte data
+  /// This is useful for detecting the format before ecoding to check
+  /// if the image is already in the desired format.
+  ///
+  /// Throws [FastImageException] if the format cannot be detected.
+  static ImageFormatEnum guessFormat(Uint8List data) {
+    final dataPtr = malloc.allocate<ffi.Uint8>(data.length);
+    final outFormatPtr = malloc.allocate<ffi.Uint32>(ffi.sizeOf<ffi.Uint32>());
+
+    try {
+      dataPtr.asTypedList(data.length).setAll(0, data);
+      final errorCode = fast_image_guess_format(
+        dataPtr,
+        data.length,
+        outFormatPtr,
+      );
+      final error = ImageErrorCode.fromValue(errorCode);
+      if (error != ImageErrorCode.Success) {
+        throw FastImageException.fromCode(error);
+      }
+
+      final formatValue = outFormatPtr.value;
+      return ImageFormatEnum.fromValue(formatValue);
+    } finally {
+      malloc.free(dataPtr);
+      malloc.free(outFormatPtr);
+    }
+  }
+
   /// Loads an image from a file path
-  /// 
+  ///
   /// Throws [LoadException] if the image cannot be loaded.
   factory FastImage.fromFile(String path) {
     final pathPtr = path.toNativeUtf8();
@@ -43,7 +72,7 @@ final class FastImage {
   }
 
   /// Loads an image from a byte buffer
-  /// 
+  ///
   /// Throws [LoadException] if the image cannot be loaded.
   factory FastImage.fromMemory(Uint8List data) {
     final dataPtr = malloc.allocate<ffi.Uint8>(data.length);
@@ -60,9 +89,12 @@ final class FastImage {
   }
 
   /// Loads an image from a byte buffer with a specific format
-  /// 
+  ///
   /// Throws [LoadException] if the image cannot be loaded.
-  factory FastImage.fromMemoryWithFormat(Uint8List data, ImageFormatEnum format) {
+  factory FastImage.fromMemoryWithFormat(
+    Uint8List data,
+    ImageFormatEnum format,
+  ) {
     final dataPtr = malloc.allocate<ffi.Uint8>(data.length);
     try {
       dataPtr.asTypedList(data.length).setAll(0, data);
@@ -90,7 +122,9 @@ final class FastImage {
   /// Gets the image metadata (width, height, color type)
   FastImageMetadata getMetadata() {
     _checkDisposed();
-    final metadataPtr = malloc.allocate<ImageMetadata>(ffi.sizeOf<ImageMetadata>());
+    final metadataPtr = malloc.allocate<ImageMetadata>(
+      ffi.sizeOf<ImageMetadata>(),
+    );
     try {
       final errorCode = fast_image_get_metadata(_handle, metadataPtr);
       final error = ImageErrorCode.fromValue(errorCode);
@@ -113,7 +147,7 @@ final class FastImage {
   ColorType get colorType => getMetadata().colorType;
 
   /// Saves the image to a file
-  /// 
+  ///
   /// The format is determined by the file extension.
   void saveToFile(String path) {
     _checkDisposed();
@@ -132,11 +166,18 @@ final class FastImage {
   /// Encodes the image to a byte buffer in the specified format
   Uint8List encode(ImageFormatEnum format) {
     _checkDisposed();
-    final outDataPtr = malloc.allocate<ffi.Pointer<ffi.Uint8>>(ffi.sizeOf<ffi.Pointer<ffi.Uint8>>());
+    final outDataPtr = malloc.allocate<ffi.Pointer<ffi.Uint8>>(
+      ffi.sizeOf<ffi.Pointer<ffi.Uint8>>(),
+    );
     final outLenPtr = malloc.allocate<ffi.UintPtr>(ffi.sizeOf<ffi.UintPtr>());
-    
+
     try {
-      final errorCode = fast_image_encode(_handle, format.value, outDataPtr, outLenPtr);
+      final errorCode = fast_image_encode(
+        _handle,
+        format.value,
+        outDataPtr,
+        outLenPtr,
+      );
       final error = ImageErrorCode.fromValue(errorCode);
       if (error != ImageErrorCode.Success) {
         throw FastImageException.fromCode(error);
@@ -146,10 +187,10 @@ final class FastImage {
       final len = outLenPtr.value;
 
       final result = Uint8List.fromList(dataPtr.asTypedList(len));
-      
+
       // Free the buffer allocated by Rust
       fast_image_free_buffer(dataPtr, len);
-      
+
       return result;
     } finally {
       malloc.free(outDataPtr);
@@ -158,9 +199,13 @@ final class FastImage {
   }
 
   /// Resizes the image to the specified dimensions, maintaining aspect ratio
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage resize(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
+  FastImage resize(
+    int width,
+    int height, {
+    FilterTypeEnum filter = FilterTypeEnum.Lanczos3,
+  }) {
     _checkDisposed();
     final handle = fast_image_resize(_handle, width, height, filter.value);
     if (handle == ffi.nullptr) {
@@ -170,11 +215,20 @@ final class FastImage {
   }
 
   /// Resizes the image to exact dimensions (may distort aspect ratio)
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage resizeExact(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
+  FastImage resizeExact(
+    int width,
+    int height, {
+    FilterTypeEnum filter = FilterTypeEnum.Lanczos3,
+  }) {
     _checkDisposed();
-    final handle = fast_image_resize_exact(_handle, width, height, filter.value);
+    final handle = fast_image_resize_exact(
+      _handle,
+      width,
+      height,
+      filter.value,
+    );
     if (handle == ffi.nullptr) {
       throw LoadException();
     }
@@ -182,11 +236,20 @@ final class FastImage {
   }
 
   /// Resizes the image to fit within the specified dimensions
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage resizeToFit(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
+  FastImage resizeToFit(
+    int width,
+    int height, {
+    FilterTypeEnum filter = FilterTypeEnum.Lanczos3,
+  }) {
     _checkDisposed();
-    final handle = fast_image_resize_to_fit(_handle, width, height, filter.value);
+    final handle = fast_image_resize_to_fit(
+      _handle,
+      width,
+      height,
+      filter.value,
+    );
     if (handle == ffi.nullptr) {
       throw LoadException();
     }
@@ -194,7 +257,7 @@ final class FastImage {
   }
 
   /// Crops the image to the specified rectangle
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage crop(int x, int y, int width, int height) {
     _checkDisposed();
@@ -206,7 +269,7 @@ final class FastImage {
   }
 
   /// Rotates the image 90 degrees clockwise
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate90() {
     _checkDisposed();
@@ -218,7 +281,7 @@ final class FastImage {
   }
 
   /// Rotates the image 180 degrees
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate180() {
     _checkDisposed();
@@ -230,7 +293,7 @@ final class FastImage {
   }
 
   /// Rotates the image 270 degrees clockwise (90 degrees counter-clockwise)
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate270() {
     _checkDisposed();
@@ -242,7 +305,7 @@ final class FastImage {
   }
 
   /// Flips the image horizontally
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage flipHorizontal() {
     _checkDisposed();
@@ -254,7 +317,7 @@ final class FastImage {
   }
 
   /// Flips the image vertically
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage flipVertical() {
     _checkDisposed();
@@ -266,7 +329,7 @@ final class FastImage {
   }
 
   /// Applies a Gaussian blur to the image
-  /// 
+  ///
   /// [sigma] controls the blur strength (higher = more blur)
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage blur(double sigma) {
@@ -279,7 +342,7 @@ final class FastImage {
   }
 
   /// Adjusts the brightness of the image
-  /// 
+  ///
   /// [value] is added to each pixel's brightness (can be negative)
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage brightness(int value) {
@@ -292,7 +355,7 @@ final class FastImage {
   }
 
   /// Adjusts the contrast of the image
-  /// 
+  ///
   /// [contrast] is the contrast factor (1.0 = no change, >1.0 = more contrast)
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage contrast(double contrast) {
@@ -305,7 +368,7 @@ final class FastImage {
   }
 
   /// Converts the image to grayscale
-  /// 
+  ///
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage grayscale() {
     _checkDisposed();
@@ -317,7 +380,7 @@ final class FastImage {
   }
 
   /// Inverts the colors of the image (in-place operation)
-  /// 
+  ///
   /// This mutates the current image unlike other operations.
   void invert() {
     _checkDisposed();
@@ -329,7 +392,7 @@ final class FastImage {
   }
 
   /// Disposes the native resources
-  /// 
+  ///
   /// Must be called when the image is no longer needed to prevent memory leaks.
   void dispose() {
     if (!_isDisposed) {
