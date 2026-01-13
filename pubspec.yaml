@@ -5,8 +5,8 @@ environment:
   sdk: ^3.10.7
 
 workspace:
-  - fast_image
-  - benchmarks
+  - packages/fast_image
+  - packages/benchmarks
   # - upscale_flutter
 
 hooks:
