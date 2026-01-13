@@ -2,7 +2,7 @@ name: fast_image_workspace
 description: A workspace for the fast_image package.
 
 environment:
-  sdk: ^3.11.0-36.0.dev
+  sdk: ^3.10.7
 
 workspace:
   - fast_image
