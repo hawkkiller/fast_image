@@ -142,16 +142,6 @@ pub fn resize_exact(
     img.resize_exact(width, height, filter)
 }
 
-/// Resize to fit within dimensions (maintains aspect ratio)
-pub fn resize_to_fit(
-    img: &DynamicImage,
-    width: u32,
-    height: u32,
-    filter: FilterType,
-) -> DynamicImage {
-    img.resize_to_fill(width, height, filter)
-}
-
 /// Crop an image
 pub fn crop_image(img: &DynamicImage, x: u32, y: u32, width: u32, height: u32) -> DynamicImage {
     img.crop_imm(x, y, width, height)
@@ -202,9 +192,11 @@ pub fn grayscale(img: &DynamicImage) -> DynamicImage {
     DynamicImage::ImageLuma8(img.to_luma8())
 }
 
-/// Invert colors
-pub fn invert(img: &mut DynamicImage) {
-    img.invert();
+/// Invert colors (returns new image)
+pub fn invert(img: &DynamicImage) -> DynamicImage {
+    let mut cloned = img.clone();
+    cloned.invert();
+    cloned
 }
 
 /// Get image metadata

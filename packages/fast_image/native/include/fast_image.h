@@ -1,3 +1,6 @@
+#ifndef FAST_IMAGE_H
+#define FAST_IMAGE_H
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -6,19 +9,29 @@
 /**
  * Filter type for resizing operations
  */
-enum FilterTypeEnum {
+enum FilterTypeEnum
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Nearest = 0,
   Triangle = 1,
   CatmullRom = 2,
   Gaussian = 3,
   Lanczos3 = 4,
 };
+#ifndef __cplusplus
 typedef uint32_t FilterTypeEnum;
+#endif // __cplusplus
 
 /**
  * Error codes for image operations
  */
-enum ImageErrorCode {
+enum ImageErrorCode
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Success = 0,
   InvalidPath = 1,
   UnsupportedFormat = 2,
@@ -29,12 +42,18 @@ enum ImageErrorCode {
   InvalidPointer = 7,
   Unknown = 99,
 };
+#ifndef __cplusplus
 typedef uint32_t ImageErrorCode;
+#endif // __cplusplus
 
 /**
  * Image format enum for encoding/decoding
  */
-enum ImageFormatEnum {
+enum ImageFormatEnum
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Png = 0,
   Jpeg = 1,
   Gif = 2,
@@ -43,7 +62,9 @@ enum ImageFormatEnum {
   Ico = 5,
   Tiff = 6,
 };
+#ifndef __cplusplus
 typedef uint32_t ImageFormatEnum;
+#endif // __cplusplus
 
 /**
  * Opaque handle to an image
@@ -60,6 +81,10 @@ typedef struct ImageMetadata {
   uint32_t height;
   uint8_t color_type;
 } ImageMetadata;
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /**
  * Free a string allocated by Rust
@@ -93,6 +118,26 @@ struct ImageHandle *fast_image_load_from_memory(const uint8_t *data, uintptr_t l
 struct ImageHandle *fast_image_load_from_memory_with_format(const uint8_t *data,
                                                             uintptr_t len,
                                                             ImageFormatEnum format);
+
+/**
+ * Load an image from a file path with error code output
+ */
+struct ImageHandle *fast_image_load_with_error(const char *path, ImageErrorCode *out_error);
+
+/**
+ * Load an image from memory buffer with error code output
+ */
+struct ImageHandle *fast_image_load_from_memory_with_error(const uint8_t *data,
+                                                           uintptr_t len,
+                                                           ImageErrorCode *out_error);
+
+/**
+ * Load an image from memory with specific format and error code output
+ */
+struct ImageHandle *fast_image_load_from_memory_with_format_and_error(const uint8_t *data,
+                                                                      uintptr_t len,
+                                                                      ImageFormatEnum format,
+                                                                      ImageErrorCode *out_error);
 
 /**
  * Save an image to a file path
@@ -129,14 +174,6 @@ struct ImageHandle *fast_image_resize_exact(const struct ImageHandle *handle,
                                             uint32_t width,
                                             uint32_t height,
                                             FilterTypeEnum filter);
-
-/**
- * Resize to fit within dimensions
- */
-struct ImageHandle *fast_image_resize_to_fit(const struct ImageHandle *handle,
-                                             uint32_t width,
-                                             uint32_t height,
-                                             FilterTypeEnum filter);
 
 /**
  * Crop an image
@@ -193,6 +230,12 @@ struct ImageHandle *fast_image_contrast(const struct ImageHandle *handle, float 
 struct ImageHandle *fast_image_grayscale(const struct ImageHandle *handle);
 
 /**
- * Invert colors (mutates the image)
+ * Invert colors (returns new image)
  */
-ImageErrorCode fast_image_invert(struct ImageHandle *handle);
+struct ImageHandle *fast_image_invert(const struct ImageHandle *handle);
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
+
+#endif  /* FAST_IMAGE_H */

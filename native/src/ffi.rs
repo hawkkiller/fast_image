@@ -100,6 +100,112 @@ pub extern "C" fn fast_image_load_from_memory_with_format(
     }
 }
 
+/// Load an image from a file path with error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_with_error(
+    path: *const c_char,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if path.is_null() {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let path_str = unsafe {
+        match CStr::from_ptr(path).to_str() {
+            Ok(s) => s,
+            Err(_) => {
+                if !out_error.is_null() {
+                    *out_error = ImageErrorCode::InvalidPath;
+                }
+                return std::ptr::null_mut();
+            }
+        }
+    };
+
+    match load_image(path_str) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Load an image from memory buffer with error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_from_memory_with_error(
+    data: *const u8,
+    len: usize,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if data.is_null() || len == 0 {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let buffer = unsafe { slice::from_raw_parts(data, len) };
+
+    match load_image_from_memory(buffer) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Load an image from memory with specific format and error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_from_memory_with_format_and_error(
+    data: *const u8,
+    len: usize,
+    format: ImageFormatEnum,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if data.is_null() || len == 0 {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let buffer = unsafe { slice::from_raw_parts(data, len) };
+
+    match load_image_from_memory_with_format(buffer, format.to_image_format()) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
 // ============================================================================
 // Image Saving
 // ============================================================================
@@ -220,24 +326,6 @@ pub extern "C" fn fast_image_resize_exact(
 
     let img = unsafe { &*(handle as *const DynamicImage) };
     let resized = resize_exact(img, width, height, filter.to_filter_type());
-
-    Box::into_raw(Box::new(resized)) as *mut ImageHandle
-}
-
-/// Resize to fit within dimensions
-#[unsafe(no_mangle)]
-pub extern "C" fn fast_image_resize_to_fit(
-    handle: *const ImageHandle,
-    width: u32,
-    height: u32,
-    filter: FilterTypeEnum,
-) -> *mut ImageHandle {
-    if handle.is_null() {
-        return std::ptr::null_mut();
-    }
-
-    let img = unsafe { &*(handle as *const DynamicImage) };
-    let resized = resize_to_fit(img, width, height, filter.to_filter_type());
 
     Box::into_raw(Box::new(resized)) as *mut ImageHandle
 }
@@ -382,15 +470,15 @@ pub extern "C" fn fast_image_grayscale(handle: *const ImageHandle) -> *mut Image
     Box::into_raw(Box::new(gray)) as *mut ImageHandle
 }
 
-/// Invert colors (mutates the image)
+/// Invert colors (returns new image)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_invert(handle: *mut ImageHandle) -> ImageErrorCode {
+pub extern "C" fn fast_image_invert(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
-        return ImageErrorCode::InvalidPointer;
+        return std::ptr::null_mut();
     }
 
-    let img = unsafe { &mut *(handle as *mut DynamicImage) };
-    invert(img);
+    let img = unsafe { &*(handle as *const DynamicImage) };
+    let inverted = invert(img);
 
-    ImageErrorCode::Success
+    Box::into_raw(Box::new(inverted)) as *mut ImageHandle
 }
