@@ -113,7 +113,7 @@ pub fn save_image(img: &DynamicImage, path: &str) -> Result<(), ImageError> {
 }
 
 /// Encode an image to a specific format in memory
-pub fn encode_image(
+pub fn write_to(
     img: &DynamicImage,
     format: ImageFormat,
 ) -> Result<Vec<u8>, ImageError> {
@@ -122,8 +122,8 @@ pub fn encode_image(
     Ok(buffer)
 }
 
-/// Resize an image
-pub fn resize_image(
+/// Resize an image (preserves aspect ratio, fits within bounds)
+pub fn resize(
     img: &DynamicImage,
     width: u32,
     height: u32,
@@ -132,7 +132,7 @@ pub fn resize_image(
     img.resize(width, height, filter)
 }
 
-/// Resize to fill exact dimensions (may crop)
+/// Resize to exact dimensions (ignores aspect ratio)
 pub fn resize_exact(
     img: &DynamicImage,
     width: u32,
@@ -143,42 +143,42 @@ pub fn resize_exact(
 }
 
 /// Crop an image
-pub fn crop_image(img: &DynamicImage, x: u32, y: u32, width: u32, height: u32) -> DynamicImage {
+pub fn crop(img: &DynamicImage, x: u32, y: u32, width: u32, height: u32) -> DynamicImage {
     img.crop_imm(x, y, width, height)
 }
 
 /// Rotate an image 90 degrees clockwise
-pub fn rotate_90(img: &DynamicImage) -> DynamicImage {
+pub fn rotate90(img: &DynamicImage) -> DynamicImage {
     img.rotate90()
 }
 
 /// Rotate an image 180 degrees
-pub fn rotate_180(img: &DynamicImage) -> DynamicImage {
+pub fn rotate180(img: &DynamicImage) -> DynamicImage {
     img.rotate180()
 }
 
 /// Rotate an image 270 degrees clockwise
-pub fn rotate_270(img: &DynamicImage) -> DynamicImage {
+pub fn rotate270(img: &DynamicImage) -> DynamicImage {
     img.rotate270()
 }
 
 /// Flip an image horizontally
-pub fn flip_horizontal(img: &DynamicImage) -> DynamicImage {
+pub fn fliph(img: &DynamicImage) -> DynamicImage {
     img.fliph()
 }
 
 /// Flip an image vertically
-pub fn flip_vertical(img: &DynamicImage) -> DynamicImage {
+pub fn flipv(img: &DynamicImage) -> DynamicImage {
     img.flipv()
 }
 
 /// Blur an image
-pub fn blur_image(img: &DynamicImage, sigma: f32) -> DynamicImage {
+pub fn blur(img: &DynamicImage, sigma: f32) -> DynamicImage {
     img.blur(sigma)
 }
 
-/// Adjust brightness
-pub fn adjust_brightness(img: &DynamicImage, value: i32) -> DynamicImage {
+/// Brighten the pixels of an image
+pub fn brighten(img: &DynamicImage, value: i32) -> DynamicImage {
     img.brighten(value)
 }
 

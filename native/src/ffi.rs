@@ -249,7 +249,7 @@ pub extern "C" fn fast_image_encode(
 
     let img = unsafe { &*(handle as *const DynamicImage) };
 
-    match encode_image(img, format.to_image_format()) {
+    match write_to(img, format.to_image_format()) {
         Ok(buffer) => {
             let mut boxed = buffer.into_boxed_slice();
             let len = boxed.len();
@@ -307,7 +307,7 @@ pub extern "C" fn fast_image_resize(
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let resized = resize_image(img, width, height, filter.to_filter_type());
+    let resized = resize(img, width, height, filter.to_filter_type());
 
     Box::into_raw(Box::new(resized)) as *mut ImageHandle
 }
@@ -344,7 +344,7 @@ pub extern "C" fn fast_image_crop(
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let cropped = crop_image(img, x, y, width, height);
+    let cropped = crop(img, x, y, width, height);
 
     Box::into_raw(Box::new(cropped)) as *mut ImageHandle
 }
@@ -357,7 +357,7 @@ pub extern "C" fn fast_image_rotate_90(handle: *const ImageHandle) -> *mut Image
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_90(img);
+    let rotated = rotate90(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
@@ -370,7 +370,7 @@ pub extern "C" fn fast_image_rotate_180(handle: *const ImageHandle) -> *mut Imag
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_180(img);
+    let rotated = rotate180(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
@@ -383,7 +383,7 @@ pub extern "C" fn fast_image_rotate_270(handle: *const ImageHandle) -> *mut Imag
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_270(img);
+    let rotated = rotate270(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
@@ -396,7 +396,7 @@ pub extern "C" fn fast_image_flip_horizontal(handle: *const ImageHandle) -> *mut
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let flipped = flip_horizontal(img);
+    let flipped = fliph(img);
 
     Box::into_raw(Box::new(flipped)) as *mut ImageHandle
 }
@@ -409,7 +409,7 @@ pub extern "C" fn fast_image_flip_vertical(handle: *const ImageHandle) -> *mut I
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let flipped = flip_vertical(img);
+    let flipped = flipv(img);
 
     Box::into_raw(Box::new(flipped)) as *mut ImageHandle
 }
@@ -426,7 +426,7 @@ pub extern "C" fn fast_image_blur(handle: *const ImageHandle, sigma: f32) -> *mu
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let blurred = blur_image(img, sigma);
+    let blurred = blur(img, sigma);
 
     Box::into_raw(Box::new(blurred)) as *mut ImageHandle
 }
@@ -439,7 +439,7 @@ pub extern "C" fn fast_image_brightness(handle: *const ImageHandle, value: i32) 
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let adjusted = adjust_brightness(img, value);
+    let adjusted = brighten(img, value);
 
     Box::into_raw(Box::new(adjusted)) as *mut ImageHandle
 }
