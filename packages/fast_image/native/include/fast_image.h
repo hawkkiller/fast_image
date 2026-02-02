@@ -1,3 +1,6 @@
+#ifndef FAST_IMAGE_H
+#define FAST_IMAGE_H
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -6,19 +9,29 @@
 /**
  * Filter type for resizing operations
  */
-enum FilterTypeEnum {
+enum FilterTypeEnum
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Nearest = 0,
   Triangle = 1,
   CatmullRom = 2,
   Gaussian = 3,
   Lanczos3 = 4,
 };
+#ifndef __cplusplus
 typedef uint32_t FilterTypeEnum;
+#endif // __cplusplus
 
 /**
  * Error codes for image operations
  */
-enum ImageErrorCode {
+enum ImageErrorCode
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Success = 0,
   InvalidPath = 1,
   UnsupportedFormat = 2,
@@ -29,12 +42,18 @@ enum ImageErrorCode {
   InvalidPointer = 7,
   Unknown = 99,
 };
+#ifndef __cplusplus
 typedef uint32_t ImageErrorCode;
+#endif // __cplusplus
 
 /**
  * Image format enum for encoding/decoding
  */
-enum ImageFormatEnum {
+enum ImageFormatEnum
+#ifdef __cplusplus
+  : uint32_t
+#endif // __cplusplus
+ {
   Png = 0,
   Jpeg = 1,
   Gif = 2,
@@ -43,7 +62,9 @@ enum ImageFormatEnum {
   Ico = 5,
   Tiff = 6,
 };
+#ifndef __cplusplus
 typedef uint32_t ImageFormatEnum;
+#endif // __cplusplus
 
 /**
  * Opaque handle to an image
@@ -60,6 +81,10 @@ typedef struct ImageMetadata {
   uint32_t height;
   uint8_t color_type;
 } ImageMetadata;
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /**
  * Free a string allocated by Rust
@@ -95,18 +120,38 @@ struct ImageHandle *fast_image_load_from_memory_with_format(const uint8_t *data,
                                                             ImageFormatEnum format);
 
 /**
+ * Load an image from a file path with error code output
+ */
+struct ImageHandle *fast_image_load_with_error(const char *path, ImageErrorCode *out_error);
+
+/**
+ * Load an image from memory buffer with error code output
+ */
+struct ImageHandle *fast_image_load_from_memory_with_error(const uint8_t *data,
+                                                           uintptr_t len,
+                                                           ImageErrorCode *out_error);
+
+/**
+ * Load an image from memory with specific format and error code output
+ */
+struct ImageHandle *fast_image_load_from_memory_with_format_and_error(const uint8_t *data,
+                                                                      uintptr_t len,
+                                                                      ImageFormatEnum format,
+                                                                      ImageErrorCode *out_error);
+
+/**
  * Save an image to a file path
  */
 ImageErrorCode fast_image_save(const struct ImageHandle *handle, const char *path);
 
 /**
- * Encode an image to a buffer in the specified format
+ * Write an image to a buffer in the specified format
  * Caller must free the buffer using fast_image_free_buffer
  */
-ImageErrorCode fast_image_encode(const struct ImageHandle *handle,
-                                 ImageFormatEnum format,
-                                 uint8_t **out_data,
-                                 uintptr_t *out_len);
+ImageErrorCode fast_image_write_to(const struct ImageHandle *handle,
+                                   ImageFormatEnum format,
+                                   uint8_t **out_data,
+                                   uintptr_t *out_len);
 
 /**
  * Get image metadata
@@ -131,46 +176,38 @@ struct ImageHandle *fast_image_resize_exact(const struct ImageHandle *handle,
                                             FilterTypeEnum filter);
 
 /**
- * Resize to fit within dimensions
+ * Crop an image (immutable)
  */
-struct ImageHandle *fast_image_resize_to_fit(const struct ImageHandle *handle,
-                                             uint32_t width,
-                                             uint32_t height,
-                                             FilterTypeEnum filter);
-
-/**
- * Crop an image
- */
-struct ImageHandle *fast_image_crop(const struct ImageHandle *handle,
-                                    uint32_t x,
-                                    uint32_t y,
-                                    uint32_t width,
-                                    uint32_t height);
+struct ImageHandle *fast_image_crop_imm(const struct ImageHandle *handle,
+                                        uint32_t x,
+                                        uint32_t y,
+                                        uint32_t width,
+                                        uint32_t height);
 
 /**
  * Rotate an image 90 degrees clockwise
  */
-struct ImageHandle *fast_image_rotate_90(const struct ImageHandle *handle);
+struct ImageHandle *fast_image_rotate90(const struct ImageHandle *handle);
 
 /**
  * Rotate an image 180 degrees
  */
-struct ImageHandle *fast_image_rotate_180(const struct ImageHandle *handle);
+struct ImageHandle *fast_image_rotate180(const struct ImageHandle *handle);
 
 /**
  * Rotate an image 270 degrees clockwise
  */
-struct ImageHandle *fast_image_rotate_270(const struct ImageHandle *handle);
+struct ImageHandle *fast_image_rotate270(const struct ImageHandle *handle);
 
 /**
  * Flip an image horizontally
  */
-struct ImageHandle *fast_image_flip_horizontal(const struct ImageHandle *handle);
+struct ImageHandle *fast_image_fliph(const struct ImageHandle *handle);
 
 /**
  * Flip an image vertically
  */
-struct ImageHandle *fast_image_flip_vertical(const struct ImageHandle *handle);
+struct ImageHandle *fast_image_flipv(const struct ImageHandle *handle);
 
 /**
  * Blur an image
@@ -178,14 +215,14 @@ struct ImageHandle *fast_image_flip_vertical(const struct ImageHandle *handle);
 struct ImageHandle *fast_image_blur(const struct ImageHandle *handle, float sigma);
 
 /**
- * Adjust brightness
+ * Brighten the pixels of an image
  */
-struct ImageHandle *fast_image_brightness(const struct ImageHandle *handle, int32_t value);
+struct ImageHandle *fast_image_brighten(const struct ImageHandle *handle, int32_t value);
 
 /**
  * Adjust contrast
  */
-struct ImageHandle *fast_image_contrast(const struct ImageHandle *handle, float c);
+struct ImageHandle *fast_image_adjust_contrast(const struct ImageHandle *handle, float c);
 
 /**
  * Convert to grayscale
@@ -193,6 +230,12 @@ struct ImageHandle *fast_image_contrast(const struct ImageHandle *handle, float 
 struct ImageHandle *fast_image_grayscale(const struct ImageHandle *handle);
 
 /**
- * Invert colors (mutates the image)
+ * Invert colors (returns new image)
  */
-ImageErrorCode fast_image_invert(struct ImageHandle *handle);
+struct ImageHandle *fast_image_invert(const struct ImageHandle *handle);
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
+
+#endif  /* FAST_IMAGE_H */

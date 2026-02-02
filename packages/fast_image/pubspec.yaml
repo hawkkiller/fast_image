@@ -1,6 +1,6 @@
 name: fast_image
 description: A fast image processing package.
-version: 0.0.1
+version: 0.0.2
 resolution: workspace
 
 environment:

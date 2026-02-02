@@ -4,12 +4,11 @@ import 'package:test/test.dart';
 
 void main() {
   group('FastImage', () {
-    test('loads image from file', () {
-      // This test would require an actual image file
-      // For now, we just check that the exception is thrown for missing files
+    test('loads image from file throws IoException for missing files', () {
+      // For missing files, we now get specific IoException instead of generic LoadException
       expect(
         () => FastImage.fromFile('nonexistent.jpg'),
-        throwsA(isA<LoadException>()),
+        throwsA(isA<IoException>()),
       );
     });
 
@@ -93,10 +92,11 @@ void main() {
 
       final image = FastImage.fromMemory(pngData);
       image.dispose();
+      expect(image.isDisposed, isTrue);
       
       expect(
         () => image.getMetadata(),
-        throwsStateError,
+        throwsA(isA<InvalidPointerException>()),
       );
     });
 
@@ -123,6 +123,163 @@ void main() {
       expect(ColorType.la.value, equals(1));
       expect(ColorType.rgb.value, equals(2));
       expect(ColorType.rgba.value, equals(3));
+    });
+
+    test('crop throws on out-of-bounds rectangle', () {
+      // Use 1x1 PNG image for bounds testing
+      final pngData = Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      final image = FastImage.fromMemory(pngData);
+
+      // Image is 1x1, so any crop requesting more than 1 pixel should fail
+      // Crop that exceeds width
+      expect(
+        () => image.crop(0, 0, 2, 1), // width=2 but image is only 1 wide
+        throwsA(isA<InvalidDimensionsException>()),
+      );
+
+      // Crop that exceeds height
+      expect(
+        () => image.crop(0, 0, 1, 2), // height=2 but image is only 1 tall
+        throwsA(isA<InvalidDimensionsException>()),
+      );
+
+      // Crop that starts out of bounds
+      expect(
+        () => image.crop(1, 0, 1, 1), // x=1 puts us outside the 1x1 image
+        throwsA(isA<InvalidDimensionsException>()),
+      );
+
+      image.dispose();
+    });
+
+    test('invert returns a new image (original unchanged)', () {
+      final pngData = Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      final original = FastImage.fromMemory(pngData);
+      final originalBytes = original.encode(ImageFormatEnum.Png);
+
+      // Invert should return a NEW image
+      final inverted = original.invert();
+
+      // Original should still be usable and unchanged
+      expect(original.isDisposed, isFalse);
+      final originalBytesAfter = original.encode(ImageFormatEnum.Png);
+      expect(originalBytesAfter, equals(originalBytes));
+
+      // Inverted should be a different image
+      expect(inverted, isNot(same(original)));
+
+      inverted.dispose();
+      original.dispose();
+    });
+
+    test('metadata is cached (multiple calls return same instance)', () {
+      final pngData = Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      final image = FastImage.fromMemory(pngData);
+
+      // Multiple calls to getMetadata should return the same cached instance
+      final metadata1 = image.getMetadata();
+      final metadata2 = image.getMetadata();
+
+      expect(identical(metadata1, metadata2), isTrue);
+
+      // width/height/colorType getters should also use the cached metadata
+      expect(image.width, equals(metadata1.width));
+      expect(image.height, equals(metadata1.height));
+      expect(image.colorType, equals(metadata1.colorType));
+
+      image.dispose();
+    });
+
+    test('blur with sigma 0 returns unchanged image', () {
+      final pngData = Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      final image = FastImage.fromMemory(pngData);
+
+      // blur(0) should work without error
+      final blurred = image.blur(0);
+      expect(blurred.width, equals(image.width));
+      expect(blurred.height, equals(image.height));
+
+      blurred.dispose();
+      image.dispose();
+    });
+
+    test('blur throws on negative sigma', () {
+      final pngData = Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      final image = FastImage.fromMemory(pngData);
+
+      expect(
+        () => image.blur(-1.0),
+        throwsA(isA<ArgumentError>()),
+      );
+
+      image.dispose();
+    });
+
+    test('load error specificity - invalid data throws specific exception', () {
+      // Invalid/corrupted image data should throw a specific exception
+      // (UnsupportedFormatException when format can't be detected, or DecodingException
+      // when format is detected but data is corrupted)
+      final invalidData = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
+
+      expect(
+        () => FastImage.fromMemory(invalidData),
+        throwsA(isA<FastImageException>()),
+      );
     });
   });
 }

@@ -100,6 +100,112 @@ pub extern "C" fn fast_image_load_from_memory_with_format(
     }
 }
 
+/// Load an image from a file path with error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_with_error(
+    path: *const c_char,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if path.is_null() {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let path_str = unsafe {
+        match CStr::from_ptr(path).to_str() {
+            Ok(s) => s,
+            Err(_) => {
+                if !out_error.is_null() {
+                    *out_error = ImageErrorCode::InvalidPath;
+                }
+                return std::ptr::null_mut();
+            }
+        }
+    };
+
+    match load_image(path_str) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Load an image from memory buffer with error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_from_memory_with_error(
+    data: *const u8,
+    len: usize,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if data.is_null() || len == 0 {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let buffer = unsafe { slice::from_raw_parts(data, len) };
+
+    match load_image_from_memory(buffer) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
+/// Load an image from memory with specific format and error code output
+#[unsafe(no_mangle)]
+pub extern "C" fn fast_image_load_from_memory_with_format_and_error(
+    data: *const u8,
+    len: usize,
+    format: ImageFormatEnum,
+    out_error: *mut ImageErrorCode,
+) -> *mut ImageHandle {
+    if data.is_null() || len == 0 {
+        if !out_error.is_null() {
+            unsafe { *out_error = ImageErrorCode::InvalidPointer };
+        }
+        return std::ptr::null_mut();
+    }
+
+    let buffer = unsafe { slice::from_raw_parts(data, len) };
+
+    match load_image_from_memory_with_format(buffer, format.to_image_format()) {
+        Ok(img) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = ImageErrorCode::Success };
+            }
+            Box::into_raw(Box::new(img)) as *mut ImageHandle
+        }
+        Err(e) => {
+            if !out_error.is_null() {
+                unsafe { *out_error = error_to_code(&e) };
+            }
+            std::ptr::null_mut()
+        }
+    }
+}
+
 // ============================================================================
 // Image Saving
 // ============================================================================
@@ -128,10 +234,10 @@ pub extern "C" fn fast_image_save(
     }
 }
 
-/// Encode an image to a buffer in the specified format
+/// Write an image to a buffer in the specified format
 /// Caller must free the buffer using fast_image_free_buffer
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_encode(
+pub extern "C" fn fast_image_write_to(
     handle: *const ImageHandle,
     format: ImageFormatEnum,
     out_data: *mut *mut u8,
@@ -143,7 +249,7 @@ pub extern "C" fn fast_image_encode(
 
     let img = unsafe { &*(handle as *const DynamicImage) };
 
-    match encode_image(img, format.to_image_format()) {
+    match write_to(img, format.to_image_format()) {
         Ok(buffer) => {
             let mut boxed = buffer.into_boxed_slice();
             let len = boxed.len();
@@ -201,7 +307,7 @@ pub extern "C" fn fast_image_resize(
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let resized = resize_image(img, width, height, filter.to_filter_type());
+    let resized = resize(img, width, height, filter.to_filter_type());
 
     Box::into_raw(Box::new(resized)) as *mut ImageHandle
 }
@@ -224,27 +330,9 @@ pub extern "C" fn fast_image_resize_exact(
     Box::into_raw(Box::new(resized)) as *mut ImageHandle
 }
 
-/// Resize to fit within dimensions
+/// Crop an image (immutable)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_resize_to_fit(
-    handle: *const ImageHandle,
-    width: u32,
-    height: u32,
-    filter: FilterTypeEnum,
-) -> *mut ImageHandle {
-    if handle.is_null() {
-        return std::ptr::null_mut();
-    }
-
-    let img = unsafe { &*(handle as *const DynamicImage) };
-    let resized = resize_to_fit(img, width, height, filter.to_filter_type());
-
-    Box::into_raw(Box::new(resized)) as *mut ImageHandle
-}
-
-/// Crop an image
-#[unsafe(no_mangle)]
-pub extern "C" fn fast_image_crop(
+pub extern "C" fn fast_image_crop_imm(
     handle: *const ImageHandle,
     x: u32,
     y: u32,
@@ -256,72 +344,72 @@ pub extern "C" fn fast_image_crop(
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let cropped = crop_image(img, x, y, width, height);
+    let cropped = crop_imm(img, x, y, width, height);
 
     Box::into_raw(Box::new(cropped)) as *mut ImageHandle
 }
 
 /// Rotate an image 90 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_90(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate90(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_90(img);
+    let rotated = rotate90(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
 
 /// Rotate an image 180 degrees
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_180(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate180(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_180(img);
+    let rotated = rotate180(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
 
 /// Rotate an image 270 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_270(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate270(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let rotated = rotate_270(img);
+    let rotated = rotate270(img);
 
     Box::into_raw(Box::new(rotated)) as *mut ImageHandle
 }
 
 /// Flip an image horizontally
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_flip_horizontal(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_fliph(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let flipped = flip_horizontal(img);
+    let flipped = fliph(img);
 
     Box::into_raw(Box::new(flipped)) as *mut ImageHandle
 }
 
 /// Flip an image vertically
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_flip_vertical(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_flipv(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let flipped = flip_vertical(img);
+    let flipped = flipv(img);
 
     Box::into_raw(Box::new(flipped)) as *mut ImageHandle
 }
@@ -338,27 +426,27 @@ pub extern "C" fn fast_image_blur(handle: *const ImageHandle, sigma: f32) -> *mu
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let blurred = blur_image(img, sigma);
+    let blurred = blur(img, sigma);
 
     Box::into_raw(Box::new(blurred)) as *mut ImageHandle
 }
 
-/// Adjust brightness
+/// Brighten the pixels of an image
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_brightness(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
+pub extern "C" fn fast_image_brighten(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let adjusted = adjust_brightness(img, value);
+    let adjusted = brighten(img, value);
 
     Box::into_raw(Box::new(adjusted)) as *mut ImageHandle
 }
 
 /// Adjust contrast
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
+pub extern "C" fn fast_image_adjust_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -382,15 +470,15 @@ pub extern "C" fn fast_image_grayscale(handle: *const ImageHandle) -> *mut Image
     Box::into_raw(Box::new(gray)) as *mut ImageHandle
 }
 
-/// Invert colors (mutates the image)
+/// Invert colors (returns new image)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_invert(handle: *mut ImageHandle) -> ImageErrorCode {
+pub extern "C" fn fast_image_invert(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
-        return ImageErrorCode::InvalidPointer;
+        return std::ptr::null_mut();
     }
 
-    let img = unsafe { &mut *(handle as *mut DynamicImage) };
-    invert(img);
+    let img = unsafe { &*(handle as *const DynamicImage) };
+    let inverted = invert(img);
 
-    ImageErrorCode::Success
+    Box::into_raw(Box::new(inverted)) as *mut ImageHandle
 }
