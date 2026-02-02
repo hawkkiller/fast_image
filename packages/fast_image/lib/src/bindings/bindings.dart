@@ -9,26 +9,30 @@
 import 'dart:ffi' as ffi;
 
 /// Free a string allocated by Rust
-@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Char>)>()
+@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Char>)>(isLeaf: true)
 external void fast_image_free_string(ffi.Pointer<ffi.Char> ptr);
 
 /// Free image data buffer
-@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)>()
+@ffi.Native<ffi.Void Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)>(
+  isLeaf: true,
+)
 external void fast_image_free_buffer(ffi.Pointer<ffi.Uint8> ptr, int len);
 
 /// Free an image handle
-@ffi.Native<ffi.Void Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Void Function(ffi.Pointer<ImageHandle>)>(isLeaf: true)
 external void fast_image_free(ffi.Pointer<ImageHandle> handle);
 
 /// Load an image from a file path
 /// Returns null on error
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Char>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Char>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_load(ffi.Pointer<ffi.Char> path);
 
 /// Load an image from memory buffer
 @ffi.Native<
   ffi.Pointer<ImageHandle> Function(ffi.Pointer<ffi.Uint8>, ffi.UintPtr)
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_load_from_memory(
   ffi.Pointer<ffi.Uint8> data,
   int len,
@@ -41,7 +45,7 @@ external ffi.Pointer<ImageHandle> fast_image_load_from_memory(
     ffi.UintPtr,
     ImageFormatEnum$1,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_format(
   ffi.Pointer<ffi.Uint8> data,
   int len,
@@ -54,7 +58,7 @@ external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_format(
     ffi.Pointer<ffi.Char>,
     ffi.Pointer<ImageErrorCode$1>,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_load_with_error(
   ffi.Pointer<ffi.Char> path,
   ffi.Pointer<ImageErrorCode$1> out_error,
@@ -67,7 +71,7 @@ external ffi.Pointer<ImageHandle> fast_image_load_with_error(
     ffi.UintPtr,
     ffi.Pointer<ImageErrorCode$1>,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_error(
   ffi.Pointer<ffi.Uint8> data,
   int len,
@@ -82,7 +86,7 @@ external ffi.Pointer<ImageHandle> fast_image_load_from_memory_with_error(
     ImageFormatEnum$1,
     ffi.Pointer<ImageErrorCode$1>,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle>
 fast_image_load_from_memory_with_format_and_error(
   ffi.Pointer<ffi.Uint8> data,
@@ -94,7 +98,7 @@ fast_image_load_from_memory_with_format_and_error(
 /// Save an image to a file path
 @ffi.Native<
   ImageErrorCode$1 Function(ffi.Pointer<ImageHandle>, ffi.Pointer<ffi.Char>)
->()
+>(isLeaf: true)
 external int fast_image_save(
   ffi.Pointer<ImageHandle> handle,
   ffi.Pointer<ffi.Char> path,
@@ -109,7 +113,7 @@ external int fast_image_save(
     ffi.Pointer<ffi.Pointer<ffi.Uint8>>,
     ffi.Pointer<ffi.UintPtr>,
   )
->()
+>(isLeaf: true)
 external int fast_image_write_to(
   ffi.Pointer<ImageHandle> handle,
   int format,
@@ -123,7 +127,7 @@ external int fast_image_write_to(
     ffi.Pointer<ImageHandle>,
     ffi.Pointer<ImageMetadata>,
   )
->()
+>(isLeaf: true)
 external int fast_image_get_metadata(
   ffi.Pointer<ImageHandle> handle,
   ffi.Pointer<ImageMetadata> out_metadata,
@@ -137,7 +141,7 @@ external int fast_image_get_metadata(
     ffi.Uint32,
     FilterTypeEnum$1,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_resize(
   ffi.Pointer<ImageHandle> handle,
   int width,
@@ -153,7 +157,7 @@ external ffi.Pointer<ImageHandle> fast_image_resize(
     ffi.Uint32,
     FilterTypeEnum$1,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_resize_exact(
   ffi.Pointer<ImageHandle> handle,
   int width,
@@ -170,7 +174,7 @@ external ffi.Pointer<ImageHandle> fast_image_resize_exact(
     ffi.Uint32,
     ffi.Uint32,
   )
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_crop_imm(
   ffi.Pointer<ImageHandle> handle,
   int x,
@@ -180,31 +184,41 @@ external ffi.Pointer<ImageHandle> fast_image_crop_imm(
 );
 
 /// Rotate an image 90 degrees clockwise
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_rotate90(
   ffi.Pointer<ImageHandle> handle,
 );
 
 /// Rotate an image 180 degrees
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_rotate180(
   ffi.Pointer<ImageHandle> handle,
 );
 
 /// Rotate an image 270 degrees clockwise
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_rotate270(
   ffi.Pointer<ImageHandle> handle,
 );
 
 /// Flip an image horizontally
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_fliph(
   ffi.Pointer<ImageHandle> handle,
 );
 
 /// Flip an image vertically
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_flipv(
   ffi.Pointer<ImageHandle> handle,
 );
@@ -212,7 +226,7 @@ external ffi.Pointer<ImageHandle> fast_image_flipv(
 /// Blur an image
 @ffi.Native<
   ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_blur(
   ffi.Pointer<ImageHandle> handle,
   double sigma,
@@ -221,7 +235,7 @@ external ffi.Pointer<ImageHandle> fast_image_blur(
 /// Brighten the pixels of an image
 @ffi.Native<
   ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Int32)
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_brighten(
   ffi.Pointer<ImageHandle> handle,
   int value,
@@ -230,20 +244,24 @@ external ffi.Pointer<ImageHandle> fast_image_brighten(
 /// Adjust contrast
 @ffi.Native<
   ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>, ffi.Float)
->()
+>(isLeaf: true)
 external ffi.Pointer<ImageHandle> fast_image_adjust_contrast(
   ffi.Pointer<ImageHandle> handle,
   double c,
 );
 
 /// Convert to grayscale
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_grayscale(
   ffi.Pointer<ImageHandle> handle,
 );
 
 /// Invert colors (returns new image)
-@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>()
+@ffi.Native<ffi.Pointer<ImageHandle> Function(ffi.Pointer<ImageHandle>)>(
+  isLeaf: true,
+)
 external ffi.Pointer<ImageHandle> fast_image_invert(
   ffi.Pointer<ImageHandle> handle,
 );

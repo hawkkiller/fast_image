@@ -17,3 +17,7 @@ compiler-opts:
   - -isysroot
   - /Applications/Xcode-16.2.0.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 ffi-native:
+functions:
+  leaf:
+    include:
+      - "fast_image_.*"
