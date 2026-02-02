@@ -220,7 +220,7 @@ final class FastImage {
     final outLenPtr = malloc.allocate<ffi.UintPtr>(ffi.sizeOf<ffi.UintPtr>());
     
     try {
-      final errorCode = fast_image_encode(_handle, format.value, outDataPtr, outLenPtr);
+      final errorCode = fast_image_write_to(_handle, format.value, outDataPtr, outLenPtr);
       final error = _errorFromValue(errorCode);
       if (error != ImageErrorCode.Success) {
         throw FastImageException.fromCode(error, context: 'format: ${format.name}');
@@ -270,7 +270,7 @@ final class FastImage {
   FastImage crop(int x, int y, int width, int height) {
     _checkDisposed();
     _validateCrop(x, y, width, height);
-    final handle = fast_image_crop(_handle, x, y, width, height);
+    final handle = fast_image_crop_imm(_handle, x, y, width, height);
     return _fromNativeHandle(handle, 'crop');
   }
 
@@ -279,7 +279,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate90() {
     _checkDisposed();
-    final handle = fast_image_rotate_90(_handle);
+    final handle = fast_image_rotate90(_handle);
     return _fromNativeHandle(handle, 'rotate90');
   }
 
@@ -288,7 +288,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate180() {
     _checkDisposed();
-    final handle = fast_image_rotate_180(_handle);
+    final handle = fast_image_rotate180(_handle);
     return _fromNativeHandle(handle, 'rotate180');
   }
 
@@ -297,7 +297,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage rotate270() {
     _checkDisposed();
-    final handle = fast_image_rotate_270(_handle);
+    final handle = fast_image_rotate270(_handle);
     return _fromNativeHandle(handle, 'rotate270');
   }
 
@@ -306,7 +306,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage flipHorizontal() {
     _checkDisposed();
-    final handle = fast_image_flip_horizontal(_handle);
+    final handle = fast_image_fliph(_handle);
     return _fromNativeHandle(handle, 'flipHorizontal');
   }
 
@@ -315,7 +315,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage flipVertical() {
     _checkDisposed();
-    final handle = fast_image_flip_vertical(_handle);
+    final handle = fast_image_flipv(_handle);
     return _fromNativeHandle(handle, 'flipVertical');
   }
 
@@ -340,7 +340,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage brightness(int value) {
     _checkDisposed();
-    final handle = fast_image_brightness(_handle, value);
+    final handle = fast_image_brighten(_handle, value);
     return _fromNativeHandle(handle, 'brightness');
   }
 
@@ -350,7 +350,7 @@ final class FastImage {
   /// Returns a new [FastImage] instance. The original is not modified.
   FastImage contrast(double contrast) {
     _checkDisposed();
-    final handle = fast_image_contrast(_handle, contrast);
+    final handle = fast_image_adjust_contrast(_handle, contrast);
     return _fromNativeHandle(handle, 'contrast');
   }
 

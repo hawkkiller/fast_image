@@ -142,8 +142,8 @@ pub fn resize_exact(
     img.resize_exact(width, height, filter)
 }
 
-/// Crop an image
-pub fn crop(img: &DynamicImage, x: u32, y: u32, width: u32, height: u32) -> DynamicImage {
+/// Crop an image (immutable)
+pub fn crop_imm(img: &DynamicImage, x: u32, y: u32, width: u32, height: u32) -> DynamicImage {
     img.crop_imm(x, y, width, height)
 }
 

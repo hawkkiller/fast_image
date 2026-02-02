@@ -234,10 +234,10 @@ pub extern "C" fn fast_image_save(
     }
 }
 
-/// Encode an image to a buffer in the specified format
+/// Write an image to a buffer in the specified format
 /// Caller must free the buffer using fast_image_free_buffer
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_encode(
+pub extern "C" fn fast_image_write_to(
     handle: *const ImageHandle,
     format: ImageFormatEnum,
     out_data: *mut *mut u8,
@@ -330,9 +330,9 @@ pub extern "C" fn fast_image_resize_exact(
     Box::into_raw(Box::new(resized)) as *mut ImageHandle
 }
 
-/// Crop an image
+/// Crop an image (immutable)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_crop(
+pub extern "C" fn fast_image_crop_imm(
     handle: *const ImageHandle,
     x: u32,
     y: u32,
@@ -344,14 +344,14 @@ pub extern "C" fn fast_image_crop(
     }
 
     let img = unsafe { &*(handle as *const DynamicImage) };
-    let cropped = crop(img, x, y, width, height);
+    let cropped = crop_imm(img, x, y, width, height);
 
     Box::into_raw(Box::new(cropped)) as *mut ImageHandle
 }
 
 /// Rotate an image 90 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_90(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate90(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -364,7 +364,7 @@ pub extern "C" fn fast_image_rotate_90(handle: *const ImageHandle) -> *mut Image
 
 /// Rotate an image 180 degrees
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_180(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate180(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -377,7 +377,7 @@ pub extern "C" fn fast_image_rotate_180(handle: *const ImageHandle) -> *mut Imag
 
 /// Rotate an image 270 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate_270(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_rotate270(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -390,7 +390,7 @@ pub extern "C" fn fast_image_rotate_270(handle: *const ImageHandle) -> *mut Imag
 
 /// Flip an image horizontally
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_flip_horizontal(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_fliph(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -403,7 +403,7 @@ pub extern "C" fn fast_image_flip_horizontal(handle: *const ImageHandle) -> *mut
 
 /// Flip an image vertically
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_flip_vertical(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn fast_image_flipv(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -431,9 +431,9 @@ pub extern "C" fn fast_image_blur(handle: *const ImageHandle, sigma: f32) -> *mu
     Box::into_raw(Box::new(blurred)) as *mut ImageHandle
 }
 
-/// Adjust brightness
+/// Brighten the pixels of an image
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_brightness(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
+pub extern "C" fn fast_image_brighten(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -446,7 +446,7 @@ pub extern "C" fn fast_image_brightness(handle: *const ImageHandle, value: i32) 
 
 /// Adjust contrast
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
+pub extern "C" fn fast_image_adjust_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
