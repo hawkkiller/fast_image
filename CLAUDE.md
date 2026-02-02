@@ -23,7 +23,7 @@ dart tool/build.dart -o<os> -a<arch>
 # Examples: -omacos -aarm64, -olinux -ax64, -oandroid -aarm64
 
 # Generate FFI bindings (after changing native/src/ffi.rs)
-dart run ffigen
+dart run ffigen --config ffigen.yaml
 ```
 
 ## Release
