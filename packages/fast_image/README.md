@@ -1,36 +1,135 @@
 # Fast Image
 
-Fast, cross-platform image manipulation for Dart, backed by Rust via FFI.
-Native binaries are delivered on demand using Dart build hooks.
+Fast, cross-platform image manipulation for Dart, powered by Rust via FFI.
 
-## Usage
+## Installation
+
+```yaml
+dependencies:
+  fast_image: ^0.0.2
+```
+
+Native binaries are downloaded automatically via Dart build hooks.
+
+## Quick Start
 
 ```dart
 import 'package:fast_image/fast_image.dart';
 
 final image = FastImage.fromFile('input.jpg');
-final resized = image.resize(800, 600);
-resized.saveToFile('output.png');
-resized.dispose();
+final result = image.resize(800, 600);
+result.saveToFile('output.png');
+result.dispose();
 image.dispose();
 ```
 
-## Exceptions
+## Loading Images
 
-All failures throw typed `FastImageException` subclasses (for example,
-`InvalidPathException`, `DecodingException`, `EncodingException`).
+```dart
+// From file (format auto-detected)
+final image = FastImage.fromFile('photo.jpg');
 
-## Resource management
+// From memory
+final bytes = await File('photo.png').readAsBytes();
+final image = FastImage.fromMemory(bytes);
 
-Call `dispose()` when you are done with an image to release native resources.
-A finalizer acts as a fallback, but explicit disposal is recommended.
+// From memory with explicit format
+final image = FastImage.fromMemoryWithFormat(bytes, ImageFormatEnum.Png);
+```
 
-## Release Process
+## Supported Formats
 
-When you modify Dart or Rust code and want to release new native assets:
+PNG, JPEG, GIF, WebP, BMP, ICO, TIFF
 
-1. Push changes to a branch and open a PR to `main` — CI builds and tests all platforms
-2. Merge the PR to `main`
-3. Create and push a tag: `git tag fast_image-assets-v1.0.0 && git push origin fast_image-assets-v1.0.0`
-4. GitHub Actions builds libraries for all platforms (Linux, macOS, Windows, Android, iOS)
-5. A GitHub Release is created automatically with all native binaries attached
+## Image Operations
+
+All operations return a **new** `FastImage` instance; the original is unchanged.
+
+```dart
+// Resize (maintains aspect ratio)
+final resized = image.resize(800, 600);
+
+// Resize exact (may distort)
+final stretched = image.resizeExact(800, 600);
+
+// Crop (x, y, width, height)
+final cropped = image.crop(100, 100, 400, 300);
+
+// Rotate
+final r90 = image.rotate90();
+final r180 = image.rotate180();
+final r270 = image.rotate270();
+
+// Flip
+final hFlip = image.flipHorizontal();
+final vFlip = image.flipVertical();
+
+// Adjustments
+final blurred = image.blur(2.5);           // Gaussian blur (sigma)
+final bright = image.brightness(30);       // Add to brightness (-255 to 255)
+final contrast = image.contrast(1.2);      // Contrast factor (1.0 = unchanged)
+final gray = image.grayscale();
+final inverted = image.invert();
+```
+
+### Resize Filters
+
+```dart
+image.resize(800, 600, filter: FilterTypeEnum.Lanczos3);  // Default, high quality
+image.resize(800, 600, filter: FilterTypeEnum.Nearest);   // Fastest, pixelated
+image.resize(800, 600, filter: FilterTypeEnum.Triangle);  // Bilinear
+image.resize(800, 600, filter: FilterTypeEnum.CatmullRom);
+image.resize(800, 600, filter: FilterTypeEnum.Gaussian);
+```
+
+## Saving & Encoding
+
+```dart
+// Save to file (format from extension)
+image.saveToFile('output.webp');
+
+// Encode to bytes
+final pngBytes = image.encode(ImageFormatEnum.Png);
+final jpegBytes = image.encode(ImageFormatEnum.Jpeg);
+```
+
+## Metadata
+
+```dart
+final meta = image.getMetadata();
+print('${meta.width}x${meta.height}, ${meta.colorType}');
+
+// Or directly:
+print('${image.width}x${image.height}');
+```
+
+## Resource Management
+
+Call `dispose()` when done to free native memory. A finalizer provides a safety net, but explicit disposal is recommended.
+
+```dart
+final image = FastImage.fromFile('input.jpg');
+try {
+  // use image...
+} finally {
+  image.dispose();
+}
+```
+
+## Error Handling
+
+All errors throw typed `FastImageException` subclasses:
+
+| Exception | Cause |
+|-----------|-------|
+| `InvalidPathException` | Empty or invalid file path |
+| `IoException` | File read/write failure |
+| `DecodingException` | Cannot decode image data |
+| `EncodingException` | Cannot encode to format |
+| `UnsupportedFormatException` | Format not supported |
+| `InvalidDimensionsException` | Invalid width/height/crop bounds |
+| `InvalidPointerException` | Image already disposed |
+
+## Platforms
+
+Linux, macOS, Windows, Android, iOS
