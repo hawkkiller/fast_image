@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/bindings.dart';
-import 'fast_image_exception.dart';
+import 'pixer_exception.dart';
 import 'image_metadata.dart';
 
 /// A fast image processing library
@@ -14,23 +14,23 @@ import 'image_metadata.dart';
 /// 
 /// Example:
 /// ```dart
-/// final image = FastImage.fromFile('input.jpg');
+/// final image = Pixer.fromFile('input.jpg');
 /// final resized = image.resize(800, 600);
 /// resized.saveToFile('output.jpg');
 /// resized.dispose();
 /// image.dispose();
 /// ```
-final class FastImage {
-  FastImage._(this._handle) : assert(_handle != ffi.nullptr) {
+final class Pixer {
+  Pixer._(this._handle) : assert(_handle != ffi.nullptr) {
     _finalizer.attach(this, _handle, detach: this);
   }
 
   static final Finalizer<ffi.Pointer<ImageHandle>> _finalizer =
-      Finalizer((handle) => fast_image_free(handle));
+      Finalizer((handle) => pixer_free(handle));
 
   final ffi.Pointer<ImageHandle> _handle;
   bool _isDisposed = false;
-  FastImageMetadata? _cachedMetadata;
+  PixerMetadata? _cachedMetadata;
 
   /// Whether the native resources have been disposed.
   bool get isDisposed => _isDisposed;
@@ -41,19 +41,19 @@ final class FastImage {
   /// Throws [IoException] if the file cannot be read.
   /// Throws [DecodingException] if the image format cannot be decoded.
   /// Throws [UnsupportedFormatException] if the format is not supported.
-  factory FastImage.fromFile(String path) {
+  factory Pixer.fromFile(String path) {
     if (path.trim().isEmpty) {
       throw InvalidPathException('path is empty');
     }
     final pathPtr = path.toNativeUtf8();
     final errorPtr = malloc.allocate<ffi.Uint32>(ffi.sizeOf<ffi.Uint32>());
     try {
-      final handle = fast_image_load_with_error(pathPtr.cast(), errorPtr);
+      final handle = pixer_load_with_error(pathPtr.cast(), errorPtr);
       if (handle == ffi.nullptr) {
         final errorCode = ImageErrorCode.fromValue(errorPtr.value);
-        throw FastImageException.fromCode(errorCode, context: 'path: $path');
+        throw PixerException.fromCode(errorCode, context: 'path: $path');
       }
-      return FastImage._(handle);
+      return Pixer._(handle);
     } finally {
       malloc.free(pathPtr);
       malloc.free(errorPtr);
@@ -64,7 +64,7 @@ final class FastImage {
   ///
   /// Throws [DecodingException] if the buffer is empty or cannot be decoded.
   /// Throws [UnsupportedFormatException] if the format is not supported.
-  factory FastImage.fromMemory(Uint8List data) {
+  factory Pixer.fromMemory(Uint8List data) {
     if (data.isEmpty) {
       throw DecodingException('input buffer is empty');
     }
@@ -72,12 +72,12 @@ final class FastImage {
     final errorPtr = malloc.allocate<ffi.Uint32>(ffi.sizeOf<ffi.Uint32>());
     try {
       dataPtr.asTypedList(data.length).setAll(0, data);
-      final handle = fast_image_load_from_memory_with_error(dataPtr, data.length, errorPtr);
+      final handle = pixer_load_from_memory_with_error(dataPtr, data.length, errorPtr);
       if (handle == ffi.nullptr) {
         final errorCode = ImageErrorCode.fromValue(errorPtr.value);
-        throw FastImageException.fromCode(errorCode, context: 'input: memory');
+        throw PixerException.fromCode(errorCode, context: 'input: memory');
       }
-      return FastImage._(handle);
+      return Pixer._(handle);
     } finally {
       malloc.free(dataPtr);
       malloc.free(errorPtr);
@@ -88,7 +88,7 @@ final class FastImage {
   ///
   /// Throws [DecodingException] if the buffer is empty or cannot be decoded.
   /// Throws [UnsupportedFormatException] if the format is not supported.
-  factory FastImage.fromMemoryWithFormat(Uint8List data, ImageFormatEnum format) {
+  factory Pixer.fromMemoryWithFormat(Uint8List data, ImageFormatEnum format) {
     if (data.isEmpty) {
       throw DecodingException('input buffer is empty');
     }
@@ -96,7 +96,7 @@ final class FastImage {
     final errorPtr = malloc.allocate<ffi.Uint32>(ffi.sizeOf<ffi.Uint32>());
     try {
       dataPtr.asTypedList(data.length).setAll(0, data);
-      final handle = fast_image_load_from_memory_with_format_and_error(
+      final handle = pixer_load_from_memory_with_format_and_error(
         dataPtr,
         data.length,
         format.value,
@@ -104,9 +104,9 @@ final class FastImage {
       );
       if (handle == ffi.nullptr) {
         final errorCode = ImageErrorCode.fromValue(errorPtr.value);
-        throw FastImageException.fromCode(errorCode, context: 'input: memory, format: ${format.name}');
+        throw PixerException.fromCode(errorCode, context: 'input: memory, format: ${format.name}');
       }
-      return FastImage._(handle);
+      return Pixer._(handle);
     } finally {
       malloc.free(dataPtr);
       malloc.free(errorPtr);
@@ -146,11 +146,11 @@ final class FastImage {
     }
   }
 
-  FastImage _fromNativeHandle(ffi.Pointer<ImageHandle> handle, String operation) {
+  Pixer _fromNativeHandle(ffi.Pointer<ImageHandle> handle, String operation) {
     if (handle == ffi.nullptr) {
       throw UnknownException('operation: $operation');
     }
-    return FastImage._(handle);
+    return Pixer._(handle);
   }
 
   ImageErrorCode _errorFromValue(int value) {
@@ -165,18 +165,18 @@ final class FastImage {
   ///
   /// The result is cached; subsequent calls return the cached value
   /// without an FFI round-trip.
-  FastImageMetadata getMetadata() {
+  PixerMetadata getMetadata() {
     _checkDisposed();
     if (_cachedMetadata != null) return _cachedMetadata!;
 
     final metadataPtr = malloc.allocate<ImageMetadata>(ffi.sizeOf<ImageMetadata>());
     try {
-      final errorCode = fast_image_get_metadata(_handle, metadataPtr);
+      final errorCode = pixer_get_metadata(_handle, metadataPtr);
       final error = _errorFromValue(errorCode);
       if (error != ImageErrorCode.Success) {
-        throw FastImageException.fromCode(error, context: 'operation: metadata');
+        throw PixerException.fromCode(error, context: 'operation: metadata');
       }
-      _cachedMetadata = FastImageMetadata.fromNative(metadataPtr);
+      _cachedMetadata = PixerMetadata.fromNative(metadataPtr);
       return _cachedMetadata!;
     } finally {
       malloc.free(metadataPtr);
@@ -203,10 +203,10 @@ final class FastImage {
     }
     final pathPtr = path.toNativeUtf8();
     try {
-      final errorCode = fast_image_save(_handle, pathPtr.cast());
+      final errorCode = pixer_save(_handle, pathPtr.cast());
       final error = _errorFromValue(errorCode);
       if (error != ImageErrorCode.Success) {
-        throw FastImageException.fromCode(error, context: 'path: $path');
+        throw PixerException.fromCode(error, context: 'path: $path');
       }
     } finally {
       malloc.free(pathPtr);
@@ -220,10 +220,10 @@ final class FastImage {
     final outLenPtr = malloc.allocate<ffi.UintPtr>(ffi.sizeOf<ffi.UintPtr>());
     
     try {
-      final errorCode = fast_image_write_to(_handle, format.value, outDataPtr, outLenPtr);
+      final errorCode = pixer_write_to(_handle, format.value, outDataPtr, outLenPtr);
       final error = _errorFromValue(errorCode);
       if (error != ImageErrorCode.Success) {
-        throw FastImageException.fromCode(error, context: 'format: ${format.name}');
+        throw PixerException.fromCode(error, context: 'format: ${format.name}');
       }
 
       final dataPtr = outDataPtr.value;
@@ -235,7 +235,7 @@ final class FastImage {
       final result = Uint8List.fromList(dataPtr.asTypedList(len));
       
       // Free the buffer allocated by Rust
-      fast_image_free_buffer(dataPtr, len);
+      pixer_free_buffer(dataPtr, len);
       
       return result;
     } finally {
@@ -246,76 +246,76 @@ final class FastImage {
 
   /// Resizes the image to the specified dimensions, maintaining aspect ratio
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage resize(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer resize(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
     _checkDisposed();
     _validateDimensions(width, height);
-    final handle = fast_image_resize(_handle, width, height, filter.value);
+    final handle = pixer_resize(_handle, width, height, filter.value);
     return _fromNativeHandle(handle, 'resize');
   }
 
   /// Resizes the image to exact dimensions (may distort aspect ratio)
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage resizeExact(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer resizeExact(int width, int height, {FilterTypeEnum filter = FilterTypeEnum.Lanczos3}) {
     _checkDisposed();
     _validateDimensions(width, height);
-    final handle = fast_image_resize_exact(_handle, width, height, filter.value);
+    final handle = pixer_resize_exact(_handle, width, height, filter.value);
     return _fromNativeHandle(handle, 'resizeExact');
   }
 
   /// Crops the image to the specified rectangle
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage crop(int x, int y, int width, int height) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer crop(int x, int y, int width, int height) {
     _checkDisposed();
     _validateCrop(x, y, width, height);
-    final handle = fast_image_crop_imm(_handle, x, y, width, height);
+    final handle = pixer_crop_imm(_handle, x, y, width, height);
     return _fromNativeHandle(handle, 'crop');
   }
 
   /// Rotates the image 90 degrees clockwise
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage rotate90() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer rotate90() {
     _checkDisposed();
-    final handle = fast_image_rotate90(_handle);
+    final handle = pixer_rotate90(_handle);
     return _fromNativeHandle(handle, 'rotate90');
   }
 
   /// Rotates the image 180 degrees
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage rotate180() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer rotate180() {
     _checkDisposed();
-    final handle = fast_image_rotate180(_handle);
+    final handle = pixer_rotate180(_handle);
     return _fromNativeHandle(handle, 'rotate180');
   }
 
   /// Rotates the image 270 degrees clockwise (90 degrees counter-clockwise)
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage rotate270() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer rotate270() {
     _checkDisposed();
-    final handle = fast_image_rotate270(_handle);
+    final handle = pixer_rotate270(_handle);
     return _fromNativeHandle(handle, 'rotate270');
   }
 
   /// Flips the image horizontally
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage flipHorizontal() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer flipHorizontal() {
     _checkDisposed();
-    final handle = fast_image_fliph(_handle);
+    final handle = pixer_fliph(_handle);
     return _fromNativeHandle(handle, 'flipHorizontal');
   }
 
   /// Flips the image vertically
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage flipVertical() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer flipVertical() {
     _checkDisposed();
-    final handle = fast_image_flipv(_handle);
+    final handle = pixer_flipv(_handle);
     return _fromNativeHandle(handle, 'flipVertical');
   }
 
@@ -324,51 +324,51 @@ final class FastImage {
   /// [sigma] controls the blur strength (higher = more blur).
   /// A value of 0 results in no change.
   /// Throws [ArgumentError] if sigma is negative.
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage blur(double sigma) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer blur(double sigma) {
     _checkDisposed();
     if (sigma < 0) {
       throw ArgumentError.value(sigma, 'sigma', 'Must be >= 0');
     }
-    final handle = fast_image_blur(_handle, sigma);
+    final handle = pixer_blur(_handle, sigma);
     return _fromNativeHandle(handle, 'blur');
   }
 
   /// Adjusts the brightness of the image
   /// 
   /// [value] is added to each pixel's brightness (can be negative)
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage brightness(int value) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer brightness(int value) {
     _checkDisposed();
-    final handle = fast_image_brighten(_handle, value);
+    final handle = pixer_brighten(_handle, value);
     return _fromNativeHandle(handle, 'brightness');
   }
 
   /// Adjusts the contrast of the image
   /// 
   /// [contrast] is the contrast factor (1.0 = no change, >1.0 = more contrast)
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage contrast(double contrast) {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer contrast(double contrast) {
     _checkDisposed();
-    final handle = fast_image_adjust_contrast(_handle, contrast);
+    final handle = pixer_adjust_contrast(_handle, contrast);
     return _fromNativeHandle(handle, 'contrast');
   }
 
   /// Converts the image to grayscale
   /// 
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage grayscale() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer grayscale() {
     _checkDisposed();
-    final handle = fast_image_grayscale(_handle);
+    final handle = pixer_grayscale(_handle);
     return _fromNativeHandle(handle, 'grayscale');
   }
 
   /// Inverts the colors of the image.
   ///
-  /// Returns a new [FastImage] instance. The original is not modified.
-  FastImage invert() {
+  /// Returns a new [Pixer] instance. The original is not modified.
+  Pixer invert() {
     _checkDisposed();
-    final handle = fast_image_invert(_handle);
+    final handle = pixer_invert(_handle);
     return _fromNativeHandle(handle, 'invert');
   }
 
@@ -379,7 +379,7 @@ final class FastImage {
   void dispose() {
     if (!_isDisposed) {
       _finalizer.detach(this);
-      fast_image_free(_handle);
+      pixer_free(_handle);
       _isDisposed = true;
     }
   }

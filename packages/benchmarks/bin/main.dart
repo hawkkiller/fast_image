@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:benchmarks/dart_image_benchmark.dart';
-import 'package:benchmarks/fast_image_benchmark.dart';
+import 'package:benchmarks/pixer_benchmark.dart';
 
 void main() {
   print('\n=== Image Processing Benchmarks ===\n');
@@ -22,9 +22,9 @@ void main() {
     final operation = 'resize_${width}x$height';
     results[operation] = {};
     
-    final fastImageTime = FastImageResizeBenchmark(width, height).measure();
-    print('fast_image.$operation(RunTime): $fastImageTime us.');
-    results[operation]!['fast_image_us'] = fastImageTime;
+    final pixerTime = PixerResizeBenchmark(width, height).measure();
+    print('pixer.$operation(RunTime): $pixerTime us.');
+    results[operation]!['pixer_us'] = pixerTime;
     
     final dartImageTime = DartImageResizeBenchmark(width, height).measure();
     print('dart_image.$operation(RunTime): $dartImageTime us.');
@@ -36,9 +36,9 @@ void main() {
   print('--- Load Benchmarks ---');
   results['load'] = {};
   
-  final fastImageLoadTime = FastImageLoadBenchmark().measure();
-  print('fast_image.load(RunTime): $fastImageLoadTime us.');
-  results['load']!['fast_image_us'] = fastImageLoadTime;
+  final pixerLoadTime = PixerLoadBenchmark().measure();
+  print('pixer.load(RunTime): $pixerLoadTime us.');
+  results['load']!['pixer_us'] = pixerLoadTime;
   
   final dartImageLoadTime = DartImageLoadBenchmark().measure();
   print('dart_image.load(RunTime): $dartImageLoadTime us.');
@@ -49,9 +49,9 @@ void main() {
   print('--- Encode Benchmarks ---');
   results['encode_jpeg'] = {};
   
-  final fastImageEncodeTime = FastImageEncodeBenchmark().measure();
-  print('fast_image.encode_jpeg(RunTime): $fastImageEncodeTime us.');
-  results['encode_jpeg']!['fast_image_us'] = fastImageEncodeTime;
+  final pixerEncodeTime = PixerEncodeBenchmark().measure();
+  print('pixer.encode_jpeg(RunTime): $pixerEncodeTime us.');
+  results['encode_jpeg']!['pixer_us'] = pixerEncodeTime;
   
   final dartImageEncodeTime = DartImageEncodeBenchmark().measure();
   print('dart_image.encode_jpeg(RunTime): $dartImageEncodeTime us.');
@@ -62,9 +62,9 @@ void main() {
   print('--- Rotate Benchmarks ---');
   results['rotate_90'] = {};
   
-  final fastImageRotateTime = FastImageRotateBenchmark().measure();
-  print('fast_image.rotate_90(RunTime): $fastImageRotateTime us.');
-  results['rotate_90']!['fast_image_us'] = fastImageRotateTime;
+  final pixerRotateTime = PixerRotateBenchmark().measure();
+  print('pixer.rotate_90(RunTime): $pixerRotateTime us.');
+  results['rotate_90']!['pixer_us'] = pixerRotateTime;
   
   final dartImageRotateTime = DartImageRotateBenchmark().measure();
   print('dart_image.rotate_90(RunTime): $dartImageRotateTime us.');
@@ -75,9 +75,9 @@ void main() {
   print('--- Flip Benchmarks ---');
   results['flip_horizontal'] = {};
   
-  final fastImageFlipTime = FastImageFlipBenchmark().measure();
-  print('fast_image.flip_horizontal(RunTime): $fastImageFlipTime us.');
-  results['flip_horizontal']!['fast_image_us'] = fastImageFlipTime;
+  final pixerFlipTime = PixerFlipBenchmark().measure();
+  print('pixer.flip_horizontal(RunTime): $pixerFlipTime us.');
+  results['flip_horizontal']!['pixer_us'] = pixerFlipTime;
   
   final dartImageFlipTime = DartImageFlipBenchmark().measure();
   print('dart_image.flip_horizontal(RunTime): $dartImageFlipTime us.');

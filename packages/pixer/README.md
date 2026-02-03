@@ -1,4 +1,4 @@
-# Fast Image
+# Pixer
 
 Fast, cross-platform image manipulation for Dart, powered by Rust via FFI.
 
@@ -6,7 +6,7 @@ Fast, cross-platform image manipulation for Dart, powered by Rust via FFI.
 
 ```yaml
 dependencies:
-  fast_image: ^0.0.2
+  pixer: ^0.0.2
 ```
 
 Native binaries are downloaded automatically via Dart build hooks.
@@ -14,9 +14,9 @@ Native binaries are downloaded automatically via Dart build hooks.
 ## Quick Start
 
 ```dart
-import 'package:fast_image/fast_image.dart';
+import 'package:pixer/pixer.dart';
 
-final image = FastImage.fromFile('input.jpg');
+final image = Pixer.fromFile('input.jpg');
 final result = image.resize(800, 600);
 result.saveToFile('output.png');
 result.dispose();
@@ -27,14 +27,14 @@ image.dispose();
 
 ```dart
 // From file (format auto-detected)
-final image = FastImage.fromFile('photo.jpg');
+final image = Pixer.fromFile('photo.jpg');
 
 // From memory
 final bytes = await File('photo.png').readAsBytes();
-final image = FastImage.fromMemory(bytes);
+final image = Pixer.fromMemory(bytes);
 
 // From memory with explicit format
-final image = FastImage.fromMemoryWithFormat(bytes, ImageFormatEnum.Png);
+final image = Pixer.fromMemoryWithFormat(bytes, ImageFormatEnum.Png);
 ```
 
 ## Supported Formats
@@ -43,7 +43,7 @@ PNG, JPEG, GIF, WebP, BMP, ICO, TIFF
 
 ## Image Operations
 
-All operations return a **new** `FastImage` instance; the original is unchanged.
+All operations return a **new** `Pixer` instance; the original is unchanged.
 
 ```dart
 // Resize (maintains aspect ratio)
@@ -108,7 +108,7 @@ print('${image.width}x${image.height}');
 Call `dispose()` when done to free native memory. A finalizer provides a safety net, but explicit disposal is recommended.
 
 ```dart
-final image = FastImage.fromFile('input.jpg');
+final image = Pixer.fromFile('input.jpg');
 try {
   // use image...
 } finally {
@@ -118,7 +118,7 @@ try {
 
 ## Error Handling
 
-All errors throw typed `FastImageException` subclasses:
+All errors throw typed `PixerException` subclasses:
 
 | Exception | Cause |
 |-----------|-------|

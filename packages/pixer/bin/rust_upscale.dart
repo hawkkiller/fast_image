@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:fast_image/fast_image.dart';
+import 'package:pixer/pixer.dart';
 
 void main() async {
   final url =
@@ -15,7 +15,7 @@ void main() async {
   client.close();
 
   final stopwatch = Stopwatch()..start();
-  final image = FastImage.fromMemory(bytes);
+  final image = Pixer.fromMemory(bytes);
   final upscaledImage = image.resize(3840, 2160);
   upscaledImage.saveToFile('upscaled_image.jpg');
   print('Image upscaled in ${stopwatch.elapsedMilliseconds}ms');

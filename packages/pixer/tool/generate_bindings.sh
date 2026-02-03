@@ -8,13 +8,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$PACKAGE_DIR/../.." && pwd)"
 NATIVE_DIR="$PROJECT_ROOT/native"
-HEADER_FILE="$PACKAGE_DIR/native/include/fast_image.h"
+HEADER_FILE="$PACKAGE_DIR/native/include/pixer.h"
 
 echo "Generating C header from Rust code..."
 
 # Run cbindgen from the native directory
 cd "$NATIVE_DIR"
-cbindgen --config cbindgen.toml --crate fastimg --output "$HEADER_FILE"
+cbindgen --config cbindgen.toml --crate pixer --output "$HEADER_FILE"
 
 echo "Header generated: $HEADER_FILE"
 

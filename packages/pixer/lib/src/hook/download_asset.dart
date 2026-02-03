@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
 import 'package:crypto/crypto.dart';
-import 'package:fast_image/src/hook/targets.dart';
-import 'package:fast_image/src/hook/version.dart';
+import 'package:pixer/src/hook/targets.dart';
+import 'package:pixer/src/hook/version.dart';
 
 Uri downloadUri(String target) =>
-    Uri.parse('https://github.com/hawkkiller/fast_image/releases/download/$version/$target');
+    Uri.parse('https://github.com/hawkkiller/pixer/releases/download/$version/$target');
 
 /// Downloads the asset for the given target OS and architecture.
 Future<File> downloadAsset({
@@ -30,7 +30,7 @@ Future<File> downloadAsset({
 }
 
 String createTargetName(OS targetOS, Architecture targetArchitecture, IOSSdk? iOSSdk) {
-  final buffer = StringBuffer('fastimg_');
+  final buffer = StringBuffer('pixer_');
 
   final supportedTarget = getNameForTarget(targetOS, targetArchitecture, iOSSdk);
   buffer.write(supportedTarget);

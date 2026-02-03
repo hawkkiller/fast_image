@@ -1,13 +1,13 @@
 import 'dart:typed_data';
-import 'package:fast_image/fast_image.dart';
+import 'package:pixer/pixer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('FastImage', () {
+  group('Pixer', () {
     test('loads image from file throws IoException for missing files', () {
       // For missing files, we now get specific IoException instead of generic LoadException
       expect(
-        () => FastImage.fromFile('nonexistent.jpg'),
+        () => Pixer.fromFile('nonexistent.jpg'),
         throwsA(isA<IoException>()),
       );
     });
@@ -26,7 +26,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
       expect(image.width, equals(1));
       expect(image.height, equals(1));
       image.dispose();
@@ -45,7 +45,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
       final metadata = image.getMetadata();
       
       expect(metadata.width, equals(1));
@@ -68,7 +68,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
       final encoded = image.encode(ImageFormatEnum.Png);
       
       expect(encoded, isA<Uint8List>());
@@ -90,7 +90,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
       image.dispose();
       expect(image.isDisposed, isTrue);
       
@@ -139,7 +139,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
 
       // Image is 1x1, so any crop requesting more than 1 pixel should fail
       // Crop that exceeds width
@@ -176,7 +176,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final original = FastImage.fromMemory(pngData);
+      final original = Pixer.fromMemory(pngData);
       final originalBytes = original.encode(ImageFormatEnum.Png);
 
       // Invert should return a NEW image
@@ -207,7 +207,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
 
       // Multiple calls to getMetadata should return the same cached instance
       final metadata1 = image.getMetadata();
@@ -236,7 +236,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
 
       // blur(0) should work without error
       final blurred = image.blur(0);
@@ -260,7 +260,7 @@ void main() {
         0x42, 0x60, 0x82,
       ]);
 
-      final image = FastImage.fromMemory(pngData);
+      final image = Pixer.fromMemory(pngData);
 
       expect(
         () => image.blur(-1.0),
@@ -277,8 +277,8 @@ void main() {
       final invalidData = Uint8List.fromList([0x00, 0x01, 0x02, 0x03]);
 
       expect(
-        () => FastImage.fromMemory(invalidData),
-        throwsA(isA<FastImageException>()),
+        () => Pixer.fromMemory(invalidData),
+        throwsA(isA<PixerException>()),
       );
     });
   });

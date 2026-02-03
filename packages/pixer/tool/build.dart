@@ -6,9 +6,9 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:code_assets/code_assets.dart';
-import 'package:fast_image/src/hook/get_android_compiler_config.dart';
-import 'package:fast_image/src/hook/local_build.dart';
-import 'package:fast_image/src/hook/target_versions.dart';
+import 'package:pixer/src/hook/get_android_compiler_config.dart';
+import 'package:pixer/src/hook/local_build.dart';
+import 'package:pixer/src/hook/target_versions.dart';
 import 'package:hooks/hooks.dart';
 
 void main(List<String> args) async {
@@ -47,15 +47,15 @@ void main(List<String> args) async {
 
 BuildInput createBuildInput(String osString, String architecture, String? iOSSdk) {
   final packageRoot = Platform.script.resolve('..');
-  final outputDirectoryShared = packageRoot.resolve('.dart_tool/fast_image/shared/');
-  final outputFile = packageRoot.resolve('.dart_tool/fast_image/output.json');
+  final outputDirectoryShared = packageRoot.resolve('.dart_tool/pixer/shared/');
+  final outputFile = packageRoot.resolve('.dart_tool/pixer/output.json');
 
   final os = OS.fromString(osString);
   final architectureEnum = Architecture.fromString(architecture);
   final inputBuilder = BuildInputBuilder()
     ..setupShared(
       packageRoot: packageRoot,
-      packageName: 'fast_image',
+      packageName: 'pixer',
       outputFile: outputFile,
       outputDirectoryShared: outputDirectoryShared,
     )

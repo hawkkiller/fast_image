@@ -10,7 +10,7 @@ use std::slice;
 
 /// Free a string allocated by Rust
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_free_string(ptr: *mut c_char) {
+pub extern "C" fn pixer_free_string(ptr: *mut c_char) {
     if !ptr.is_null() {
         unsafe {
             let _ = CString::from_raw(ptr);
@@ -20,7 +20,7 @@ pub extern "C" fn fast_image_free_string(ptr: *mut c_char) {
 
 /// Free image data buffer
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_free_buffer(ptr: *mut u8, len: usize) {
+pub extern "C" fn pixer_free_buffer(ptr: *mut u8, len: usize) {
     if !ptr.is_null() && len > 0 {
         unsafe {
             let _ = Vec::from_raw_parts(ptr, len, len);
@@ -30,7 +30,7 @@ pub extern "C" fn fast_image_free_buffer(ptr: *mut u8, len: usize) {
 
 /// Free an image handle
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_free(handle: *mut ImageHandle) {
+pub extern "C" fn pixer_free(handle: *mut ImageHandle) {
     if !handle.is_null() {
         unsafe {
             let _ = Box::from_raw(handle as *mut DynamicImage);
@@ -45,7 +45,7 @@ pub extern "C" fn fast_image_free(handle: *mut ImageHandle) {
 /// Load an image from a file path
 /// Returns null on error
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load(path: *const c_char) -> *mut ImageHandle {
+pub extern "C" fn pixer_load(path: *const c_char) -> *mut ImageHandle {
     if path.is_null() {
         return std::ptr::null_mut();
     }
@@ -65,7 +65,7 @@ pub extern "C" fn fast_image_load(path: *const c_char) -> *mut ImageHandle {
 
 /// Load an image from memory buffer
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load_from_memory(
+pub extern "C" fn pixer_load_from_memory(
     data: *const u8,
     len: usize,
 ) -> *mut ImageHandle {
@@ -83,7 +83,7 @@ pub extern "C" fn fast_image_load_from_memory(
 
 /// Load an image from memory with specific format
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load_from_memory_with_format(
+pub extern "C" fn pixer_load_from_memory_with_format(
     data: *const u8,
     len: usize,
     format: ImageFormatEnum,
@@ -102,7 +102,7 @@ pub extern "C" fn fast_image_load_from_memory_with_format(
 
 /// Load an image from a file path with error code output
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load_with_error(
+pub extern "C" fn pixer_load_with_error(
     path: *const c_char,
     out_error: *mut ImageErrorCode,
 ) -> *mut ImageHandle {
@@ -143,7 +143,7 @@ pub extern "C" fn fast_image_load_with_error(
 
 /// Load an image from memory buffer with error code output
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load_from_memory_with_error(
+pub extern "C" fn pixer_load_from_memory_with_error(
     data: *const u8,
     len: usize,
     out_error: *mut ImageErrorCode,
@@ -175,7 +175,7 @@ pub extern "C" fn fast_image_load_from_memory_with_error(
 
 /// Load an image from memory with specific format and error code output
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_load_from_memory_with_format_and_error(
+pub extern "C" fn pixer_load_from_memory_with_format_and_error(
     data: *const u8,
     len: usize,
     format: ImageFormatEnum,
@@ -212,7 +212,7 @@ pub extern "C" fn fast_image_load_from_memory_with_format_and_error(
 
 /// Save an image to a file path
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_save(
+pub extern "C" fn pixer_save(
     handle: *const ImageHandle,
     path: *const c_char,
 ) -> ImageErrorCode {
@@ -235,9 +235,9 @@ pub extern "C" fn fast_image_save(
 }
 
 /// Write an image to a buffer in the specified format
-/// Caller must free the buffer using fast_image_free_buffer
+/// Caller must free the buffer using pixer_free_buffer
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_write_to(
+pub extern "C" fn pixer_write_to(
     handle: *const ImageHandle,
     format: ImageFormatEnum,
     out_data: *mut *mut u8,
@@ -272,7 +272,7 @@ pub extern "C" fn fast_image_write_to(
 
 /// Get image metadata
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_get_metadata(
+pub extern "C" fn pixer_get_metadata(
     handle: *const ImageHandle,
     out_metadata: *mut ImageMetadata,
 ) -> ImageErrorCode {
@@ -296,7 +296,7 @@ pub extern "C" fn fast_image_get_metadata(
 
 /// Resize an image
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_resize(
+pub extern "C" fn pixer_resize(
     handle: *const ImageHandle,
     width: u32,
     height: u32,
@@ -314,7 +314,7 @@ pub extern "C" fn fast_image_resize(
 
 /// Resize an image to exact dimensions
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_resize_exact(
+pub extern "C" fn pixer_resize_exact(
     handle: *const ImageHandle,
     width: u32,
     height: u32,
@@ -332,7 +332,7 @@ pub extern "C" fn fast_image_resize_exact(
 
 /// Crop an image (immutable)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_crop_imm(
+pub extern "C" fn pixer_crop_imm(
     handle: *const ImageHandle,
     x: u32,
     y: u32,
@@ -351,7 +351,7 @@ pub extern "C" fn fast_image_crop_imm(
 
 /// Rotate an image 90 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate90(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_rotate90(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -364,7 +364,7 @@ pub extern "C" fn fast_image_rotate90(handle: *const ImageHandle) -> *mut ImageH
 
 /// Rotate an image 180 degrees
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate180(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_rotate180(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -377,7 +377,7 @@ pub extern "C" fn fast_image_rotate180(handle: *const ImageHandle) -> *mut Image
 
 /// Rotate an image 270 degrees clockwise
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_rotate270(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_rotate270(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -390,7 +390,7 @@ pub extern "C" fn fast_image_rotate270(handle: *const ImageHandle) -> *mut Image
 
 /// Flip an image horizontally
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_fliph(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_fliph(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -403,7 +403,7 @@ pub extern "C" fn fast_image_fliph(handle: *const ImageHandle) -> *mut ImageHand
 
 /// Flip an image vertically
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_flipv(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_flipv(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -420,7 +420,7 @@ pub extern "C" fn fast_image_flipv(handle: *const ImageHandle) -> *mut ImageHand
 
 /// Blur an image
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_blur(handle: *const ImageHandle, sigma: f32) -> *mut ImageHandle {
+pub extern "C" fn pixer_blur(handle: *const ImageHandle, sigma: f32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -433,7 +433,7 @@ pub extern "C" fn fast_image_blur(handle: *const ImageHandle, sigma: f32) -> *mu
 
 /// Brighten the pixels of an image
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_brighten(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
+pub extern "C" fn pixer_brighten(handle: *const ImageHandle, value: i32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -446,7 +446,7 @@ pub extern "C" fn fast_image_brighten(handle: *const ImageHandle, value: i32) ->
 
 /// Adjust contrast
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_adjust_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
+pub extern "C" fn pixer_adjust_contrast(handle: *const ImageHandle, c: f32) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -459,7 +459,7 @@ pub extern "C" fn fast_image_adjust_contrast(handle: *const ImageHandle, c: f32)
 
 /// Convert to grayscale
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_grayscale(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_grayscale(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }
@@ -472,7 +472,7 @@ pub extern "C" fn fast_image_grayscale(handle: *const ImageHandle) -> *mut Image
 
 /// Invert colors (returns new image)
 #[unsafe(no_mangle)]
-pub extern "C" fn fast_image_invert(handle: *const ImageHandle) -> *mut ImageHandle {
+pub extern "C" fn pixer_invert(handle: *const ImageHandle) -> *mut ImageHandle {
     if handle.is_null() {
         return std::ptr::null_mut();
     }

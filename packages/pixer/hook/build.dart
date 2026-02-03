@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:code_assets/code_assets.dart';
-import 'package:fast_image/src/hook/download_asset.dart';
-import 'package:fast_image/src/hook/hashes.dart';
-import 'package:fast_image/src/hook/local_build.dart';
+import 'package:pixer/src/hook/download_asset.dart';
+import 'package:pixer/src/hook/hashes.dart';
+import 'package:pixer/src/hook/local_build.dart';
 import 'package:hooks/hooks.dart';
 
 void main(List<String> args) async {

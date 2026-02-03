@@ -1,6 +1,6 @@
 ## 0.0.2
 
-- **Breaking:** `invert()` now returns a new `FastImage` instead of mutating in-place.
+- **Breaking:** `invert()` now returns a new `Pixer` instead of mutating in-place.
 - **Breaking:** Removed deprecated `resizeToFit()` method (use `resize()` instead).
 - **Breaking:** Renamed FFI functions to align with Rust image crate conventions:
   - `encode` -> `write_to`

@@ -1,11 +1,11 @@
-# Fast Image
+# Pixer
 
 Cross-platform image manipulation library: Dart API backed by Rust via FFI.
 
 ## Project Structure
 
-- `/native` - Rust crate (fastimg) with image processing logic
-- `/packages/fast_image` - Main Dart package with FFI bindings
+- `/native` - Rust crate (pixer) with image processing logic
+- `/packages/pixer` - Main Dart package with FFI bindings
 - `/packages/benchmarks` - Performance benchmarks
 - `/packages/upscale_flutter` - Flutter demo app
 
@@ -15,7 +15,7 @@ Cross-platform image manipulation library: Dart API backed by Rust via FFI.
 # Dependencies
 dart pub get
 
-# Run tests (from packages/fast_image)
+# Run tests (from packages/pixer)
 dart test
 
 # Build native library locally
@@ -29,7 +29,7 @@ dart run ffigen --config ffigen.yaml
 ## Release
 
 1. Push changes via PR to `main`
-2. Tag and push: `git tag fast_image-assets-v1.0.0 && git push origin fast_image-assets-v1.0.0`
+2. Tag and push: `git tag pixer-assets-v1.0.0 && git push origin pixer-assets-v1.0.0`
 3. CI builds all platforms and creates GitHub Release
 
 ## Architecture

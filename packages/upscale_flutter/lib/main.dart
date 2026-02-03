@@ -1,4 +1,4 @@
-import 'package:fast_image/fast_image.dart';
+import 'package:pixer/pixer.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'dart:io';
@@ -116,10 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final ByteData data = await rootBundle.load('assets/example_img.jpg');
     final Uint8List bytes = data.buffer.asUint8List();
 
-    final fastImage = FastImage.fromMemory(bytes);
-    final resizedImage = fastImage.resize(1920 * 2, 1080 * 2);
+    final pixer = Pixer.fromMemory(bytes);
+    final resizedImage = pixer.resize(1920 * 2, 1080 * 2);
 
-    fastImage.dispose();
+    pixer.dispose();
     final upscaledBytes = resizedImage.encode(ImageFormatEnum.Png);
     resizedImage.dispose();
 

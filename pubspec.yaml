@@ -1,15 +1,15 @@
-name: fast_image_workspace
-description: A workspace for the fast_image package.
+name: pixer_workspace
+description: A workspace for the pixer package.
 
 environment:
   sdk: ^3.10.7
 
 workspace:
-  - packages/fast_image
+  - packages/pixer
   - packages/benchmarks
   # - upscale_flutter
 
 hooks:
   user_defines:
-    fast_image:
+    pixer:
       local_build: true

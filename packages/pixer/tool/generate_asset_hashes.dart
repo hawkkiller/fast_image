@@ -4,12 +4,12 @@
 
 import 'dart:io';
 
-import 'package:fast_image/src/hook/download_asset.dart';
-import 'package:fast_image/src/hook/targets.dart';
+import 'package:pixer/src/hook/download_asset.dart';
+import 'package:pixer/src/hook/targets.dart';
 
 /// Regenerates [assetHashes].
 Future<void> main(List<String> args) async {
-  final assetsDir = Directory.fromUri(Platform.script.resolve('../.dart_tool/fast_image//'));
+  final assetsDir = Directory.fromUri(Platform.script.resolve('../.dart_tool/pixer//'));
   await assetsDir.delete(recursive: true);
   await assetsDir.create(recursive: true);
   await Future.wait([

@@ -26,8 +26,8 @@ enum ColorType {
 }
 
 /// Metadata about an image
-class FastImageMetadata {
-  const FastImageMetadata({
+class PixerMetadata {
+  const PixerMetadata({
     required this.width,
     required this.height,
     required this.colorType,
@@ -43,9 +43,9 @@ class FastImageMetadata {
   final ColorType colorType;
 
   /// Creates metadata from native struct
-  factory FastImageMetadata.fromNative(ffi.Pointer<ImageMetadata> ptr) {
+  factory PixerMetadata.fromNative(ffi.Pointer<ImageMetadata> ptr) {
     final metadata = ptr.ref;
-    return FastImageMetadata(
+    return PixerMetadata(
       width: metadata.width,
       height: metadata.height,
       colorType: ColorType.fromValue(metadata.color_type),
@@ -53,12 +53,12 @@ class FastImageMetadata {
   }
 
   @override
-  String toString() => 'FastImageMetadata(width: $width, height: $height, colorType: ${colorType.name})';
+  String toString() => 'PixerMetadata(width: $width, height: $height, colorType: ${colorType.name})';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FastImageMetadata &&
+      other is PixerMetadata &&
           runtimeType == other.runtimeType &&
           width == other.width &&
           height == other.height &&

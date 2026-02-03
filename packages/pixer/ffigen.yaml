@@ -1,11 +1,11 @@
 # Run with `dart run ffigen --config ffigen.yaml`.
-name: FastImageBindings
+name: PixerBindings
 output: "lib/src/bindings/bindings.dart"
 headers:
   entry-points:
-    - "native/include/fast_image.h"
+    - "native/include/pixer.h"
   include-directives:
-    - "native/include/fast_image.h"
+    - "native/include/pixer.h"
 preamble: |
   // ignore_for_file: always_specify_types
   // ignore_for_file: camel_case_types
@@ -20,4 +20,4 @@ ffi-native:
 functions:
   leaf:
     include:
-      - "fast_image_.*"
+      - "pixer_.*"
