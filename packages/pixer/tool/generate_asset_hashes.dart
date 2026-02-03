@@ -9,8 +9,10 @@ import 'package:pixer/src/hook/targets.dart';
 
 /// Regenerates [assetHashes].
 Future<void> main(List<String> args) async {
-  final assetsDir = Directory.fromUri(Platform.script.resolve('../.dart_tool/pixer//'));
-  await assetsDir.delete(recursive: true);
+  final assetsDir = Directory.fromUri(Platform.script.resolve('../.dart_tool/pixer/'));
+  if (assetsDir.existsSync()) {
+    await assetsDir.delete(recursive: true);
+  }
   await assetsDir.create(recursive: true);
   await Future.wait([
     for (final (targetOS, targetArchitecture, iOSSdk) in supportedTargets)

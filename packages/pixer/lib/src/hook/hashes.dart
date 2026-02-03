@@ -2,16 +2,16 @@
 //    dart tool/generate_asset_hashes.dart
 
 const assetHashes = <String, String>{
-  'pixer_windows_arm64.dll': '9b0dad9ff15934175829d7fdfe02d906',
-  'pixer_windows_x86_64.dll': 'ba8c672b719913858e12c7747bd1a8df',
-  'libpixer_android_arm64.so': 'e81c42b3cb730b39bb46ef0bab44e5d1',
-  'libpixer_android_armv7.so': '80f3a8185803c1df61bd1e85ca562f2e',
-  'libpixer_android_x86_64.so': '1fbbed85ed6ea326701e21a6a3c76f4a',
-  'libpixer_ios_arm64.dylib': 'de583977f5c6a743840b26497a14c440',
-  'libpixer_ios_sim_arm64.dylib': 'b36f167ab523a6d193014cf8c84c9d8c',
-  'libpixer_ios_sim_x86_64.dylib': '7e1fbad4aa34c4d1c3bce1243edeb4a0',
-  'libpixer_linux_aarch64.so': '66587601f8fcbf91a5d955bfa5eb0ec1',
-  'libpixer_linux_x86_64.so': '34b0b65ccdb1af2e670d35923e75bee4',
-  'libpixer_macos_arm64.dylib': '4910f035af4f27de63c4cc1084bb9191',
-  'libpixer_macos_x86_64.dylib': 'ac8cd9f5c492ceb669fbdaa7054c3aff',
+  'libpixer_android_arm64.so': 'f45f95c41e0616a7118a54fcf8058075',
+  'libpixer_android_armv7.so': 'c42b6ecfa0efa152c5919648deb27f80',
+  'libpixer_android_x86_64.so': '933c2ce6664e54686a2d0ce59faf41ae',
+  'libpixer_ios_arm64.dylib': 'a4855a59b3c3e731a0d3149d221c5686',
+  'libpixer_ios_sim_arm64.dylib': '18f8f4f712271b04d4051167a492539a',
+  'libpixer_ios_sim_x86_64.dylib': '0b8f01145ff81885b2156735a304d5bc',
+  'libpixer_linux_aarch64.so': '41037efe5b9feb3e26c9577a1d141ca2',
+  'libpixer_linux_x86_64.so': 'c34a8219294cb7fd665f5a59264bec7c',
+  'libpixer_macos_arm64.dylib': '2952d8bd033e4ed15298b0ec42a6ff28',
+  'libpixer_macos_x86_64.dylib': '0300d1fa4b26fbc3d73ad334c5d47203',
+  'pixer_windows_arm64.dll': '58bba3741c94a3121e593d3ca802aba2',
+  'pixer_windows_x86_64.dll': '4a8122ccf523ba643f5ba05194a607e9',
 };
