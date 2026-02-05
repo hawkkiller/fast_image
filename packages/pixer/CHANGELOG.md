@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Fixed build hook for web platform.
+
 ## 0.0.2
 
 - **Breaking:** `invert()` now returns a new `Pixer` instead of mutating in-place.

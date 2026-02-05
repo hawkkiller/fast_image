@@ -10,13 +10,22 @@ void main(List<String> args) async {
   await build(args, (input, output) async {
     final localBuild = input.userDefines['local_build'] as bool? ?? false;
 
+    final CodeConfig codeConfig;
+
+    try {
+      // Skip for web - code config throws on web platform
+      codeConfig = input.config.code;
+    } catch (_) {
+      return;
+    }
+
     if (localBuild) {
       return runLocalBuild(input, output);
     }
 
-    final targetOS = input.config.code.targetOS;
-    final targetArchitecture = input.config.code.targetArchitecture;
-    final iOSSdk = targetOS == OS.iOS ? input.config.code.iOS.targetSdk : null;
+    final targetOS = codeConfig.targetOS;
+    final targetArchitecture = codeConfig.targetArchitecture;
+    final iOSSdk = targetOS == OS.iOS ? codeConfig.iOS.targetSdk : null;
     final outputDirectory = Directory.fromUri(input.outputDirectory);
     final file = await downloadAsset(
       targetOS: targetOS,

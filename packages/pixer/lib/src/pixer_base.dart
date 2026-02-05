@@ -12,6 +12,11 @@ import 'image_metadata.dart';
 /// This class provides methods for loading, saving, and manipulating images.
 /// Images are backed by native Rust code for high performance.
 /// 
+/// **Important:** Always call [dispose] when done with an image to free native
+/// memory. While a finalizer provides a safety net, it is not guaranteed to run
+/// (especially in isolates). For reliable memory management, always dispose
+/// explicitly.
+/// 
 /// Example:
 /// ```dart
 /// final image = Pixer.fromFile('input.jpg');
