@@ -1,6 +1,7 @@
 # Pixer
 
-Cross-platform image manipulation library: Dart API backed by Rust via FFI.
+Pixer is a cross-platform library for image manipulation: resize, crop, rotate, create thumbnails, combine images, and more.
+It uses Rust's image crate via FFI to provide high-performance image processing.
 
 ## Project Structure
 
@@ -9,13 +10,12 @@ Cross-platform image manipulation library: Dart API backed by Rust via FFI.
 - `/packages/benchmarks` - Performance benchmarks
 - `/packages/upscale_flutter` - Flutter demo app
 
-## Commands
+## Useful Commands
 
 ```bash
 # Build native library locally
-dart tool/build.dart -o<os> -a<arch>
 # Examples: -omacos -aarm64, -olinux -ax64, -oandroid -aarm64
-
+dart tool/build.dart -o<os> -a<arch>
 # Generate FFI bindings (after changing native/src/ffi.rs)
 dart run ffigen --config ffigen.yaml
 ```
@@ -28,6 +28,6 @@ dart run ffigen --config ffigen.yaml
 
 ## Architecture
 
-- Rust code in `native/src/`: `lib.rs` (entry), `api.rs` (image ops), `ffi.rs` (C bindings)
+- Rust code in `native/src/`: `lib.rs` (entry), `api.rs` (image ops), `ffi.rs` (C-compatible API)
 - Dart bindings generated via ffigen into `lib/src/bindings/`
 - Native assets delivered via Dart build hooks (see `hook/` directory)

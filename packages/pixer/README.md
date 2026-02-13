@@ -133,3 +133,41 @@ All errors throw typed `PixerException` subclasses:
 ## Platforms
 
 Linux, macOS, Windows, Android, iOS
+
+## Roadmap
+
+### Current (v0.0.x)
+- [x] Load/save: PNG, JPEG, GIF, WebP, BMP, ICO, TIFF
+- [x] Resize (aspect-ratio-preserving & exact) with 5 filter types
+- [x] Crop, rotate (90/180/270), flip (H/V)
+- [x] Adjustments: blur, brightness, contrast, grayscale, invert
+- [x] Metadata access (width, height, color type)
+- [x] Full platform support (Linux, macOS, Windows, Android, iOS)
+
+### Planned — `image` crate
+- [ ] Encoding quality/compression options (JPEG quality, PNG compression level)
+- [ ] Hue rotation
+- [ ] Sharpen / unsharp mask
+- [ ] Thumbnail generation (optimized fast path)
+- [ ] Create blank images (solid color, transparent)
+- [ ] Composite images (overlay one image onto another at x, y)
+- [ ] Tiling
+- [ ] Animated GIF/WebP frame-level control
+- [ ] Batch processing API
+
+### Planned — requires `imageproc`
+- [ ] Arbitrary angle rotation
+- [ ] Blend modes (multiply, screen, overlay, etc.)
+- [ ] Draw primitives (rectangles, circles, lines)
+- [ ] Text rendering onto images
+- [ ] Edge detection (Canny, Sobel)
+- [ ] Content-aware resize (seam carving)
+
+### Planned — requires other crates
+- [ ] EXIF metadata read/write/preserve (e.g. `kamadak-exif`)
+- [ ] Stitch images (horizontal/vertical concat, grid layout)
+- [ ] Watermarking
+
+### Exploring
+- [ ] Advanced color adjustments (saturation, gamma, curves)
+- [ ] GPU acceleration
